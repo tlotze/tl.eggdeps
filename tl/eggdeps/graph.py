@@ -9,9 +9,10 @@ class Graph(dict):
     """A graph of egg dependencies.
     """
 
-    def __init__(self, ignored, is_dead_end):
+    def __init__(self, ignored, is_dead_end, extras):
         self.ignored = ignored
         self.is_dead_end = is_dead_end
+        self.extras = extras
         self.roots = ()
 
     def from_requirements(self, requirement_strings):
@@ -33,12 +34,13 @@ class Graph(dict):
                 node[dep] = set()
 
         new_reqs = set(dist.requires())
-        plain_names = self.names(new_reqs)
-        for extra in req.extras:
-            extra_reqs = dist.requires((extra,))
-            new_reqs.update(extra_reqs)
-            for dep in self.names(extra_reqs) - plain_names:
-                node.setdefault(dep, set()).add(extra)
+        if self.extras:
+            plain_names = self.names(new_reqs)
+            for extra in req.extras:
+                extra_reqs = dist.requires((extra,))
+                new_reqs.update(extra_reqs)
+                for dep in self.names(extra_reqs) - plain_names:
+                    node.setdefault(dep, set()).add(extra)
 
         new_reqs -= node.requirements
         node.requirements.update(new_reqs)
@@ -59,10 +61,11 @@ class Graph(dict):
                 node[dep] = set()
 
             plain_names = self.names(dist.requires())
-            for extra in dist.extras:
-                for dep in self.names(dist.requires((extra,))
-                                      ).intersection(ws_names) - plain_names:
-                    node.setdefault(dep, set()).add(extra)
+            if self.extras:
+                for extra in dist.extras:
+                    for dep in self.names(dist.requires((extra,))).\
+                            intersection(ws_names) - plain_names:
+                        node.setdefault(dep, set()).add(extra)
 
             self.roots -= set(node)
 

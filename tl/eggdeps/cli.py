@@ -24,6 +24,9 @@ def eggdeps():
                       dest="re_dead_ends", action="append", default=[],
                       help="name patterns of projects "
                            "whose dependencies to ignore")
+    parser.add_option("-n", "--no-extras",
+                      dest="extras", action="store_false", default=True,
+                      help="whether to always omit extra dependencies")
     parser.add_option("-d", "--dot",
                       dest="dot", action="store_true", default=False,
                       help="whether to produce a dot file")
@@ -32,7 +35,7 @@ def eggdeps():
     ignored = matcher(options.ignore, options.re_ignore)
     is_dead_end = matcher(options.dead_ends, options.re_dead_ends)
 
-    graph = tl.eggdeps.graph.Graph(ignored, is_dead_end)
+    graph = tl.eggdeps.graph.Graph(ignored, is_dead_end, options.extras)
 
     if requirements:
         graph.from_requirements(requirements)
