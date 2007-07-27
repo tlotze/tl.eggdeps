@@ -50,7 +50,8 @@ class Graph(dict):
 
     def from_working_set(self):
         ws = pkg_resources.working_set
-        self.roots = self.names(ws)
+        ws_names = self.names(ws)
+        self.roots = ws_names.copy()
 
         for dist in ws:
             name = dist.project_name
@@ -65,9 +66,10 @@ class Graph(dict):
                 continue
 
             plain_names = self.names(dist.requires())
-            self[name] = {None: plain_names,
-                          "extra": all_names - plain_names,
-                          }
+            self[name] = {
+                None: plain_names.intersection(ws_names),
+                "extra": (all_names - plain_names).intersection(ws_names),
+                }
 
     def names(self, collection):
         return set(item.project_name for item in collection
