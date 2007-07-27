@@ -5,24 +5,23 @@
 def print_dot(graph):
     print "digraph {"
 
-    for name, links in graph.iteritems():
-        node_options = dict(label=name)
-        if name in graph.roots:
+    for node in graph.itervalues():
+        node_options = dict(label=node.name)
+        if node.name in graph.roots:
             node_options["style"] = "filled"
             node_options["fillcolor"] = "green"
-        if graph.is_dead_end(name):
+        if node.is_dead_end:
             node_options["style"] = "filled"
-        print name.replace(".", "_") + format_options(node_options)
+        print node.name.replace(".", "_") + format_options(node_options)
 
-        for link_type, targets in links.iteritems():
+        for target, link_type in node.iteritems():
             edge_options = {}
-            if link_type is 'extra':
+            if link_type:
                 edge_options["color"] = "lightgrey"
 
-            for target in targets:
-                print "%s -> %s%s" % (name.replace(".", "_"),
-                                      target.replace(".", "_"),
-                                      format_options(edge_options))
+            print "%s -> %s%s" % (node.name.replace(".", "_"),
+                                  target.replace(".", "_"),
+                                  format_options(edge_options))
 
     print "}"
 
