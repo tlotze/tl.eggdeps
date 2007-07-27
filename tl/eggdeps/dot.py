@@ -2,17 +2,15 @@
 # See also LICENSE.txt
 
 
-def print_dot(graph, is_dead_end):
-    roots, nodes = graph
-
+def print_dot(graph):
     print "digraph {"
 
-    for name, links in nodes.iteritems():
+    for name, links in graph.iteritems():
         node_options = dict(label=name)
-        if name in roots:
+        if name in graph.roots:
             node_options["style"] = "filled"
             node_options["fillcolor"] = "green"
-        if is_dead_end(name):
+        if graph.is_dead_end(name):
             node_options["style"] = "filled"
         print name.replace(".", "_") + format_options(node_options)
 

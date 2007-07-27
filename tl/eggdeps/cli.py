@@ -32,16 +32,17 @@ def eggdeps():
     ignored = matcher(options.ignore, options.re_ignore)
     is_dead_end = matcher(options.dead_ends, options.re_dead_ends)
 
+    graph = tl.eggdeps.graph.Graph(ignored, is_dead_end)
+
     if requirements:
-        graph = tl.eggdeps.graph.graph_from_requirements(
-            requirements, ignored, is_dead_end)
+        graph.from_requirements(requirements)
     else:
-        graph = tl.eggdeps.graph.graph_from_working_set(ignored, is_dead_end)
+        graph.from_working_set()
 
     if options.dot:
-        tl.eggdeps.dot.print_dot(graph, is_dead_end)
+        tl.eggdeps.dot.print_dot(graph)
     else:
-        tl.eggdeps.plaintext.print_graph(graph, is_dead_end)
+        tl.eggdeps.plaintext.print_graph(graph)
 
 
 def matcher(names, patterns):

@@ -5,70 +5,70 @@ import sys
 import pkg_resources
 
 
-def graph_from_requirements(requirement_strings, ignored, is_dead_end):
-    ws = pkg_resources.working_set
-    requirements = set(pkg_resources.Requirement.parse(req)
-                       for req in requirement_strings)
-    roots = names(requirements, ignored)
-    nodes = {}
+class Graph(dict):
+    """A graph of egg dependencies.
+    """
 
-    def add_requirement(req):
+    def __init__(self, ignored, is_dead_end):
+        self.ignored = ignored
+        self.is_dead_end = is_dead_end
+        self.roots = ()
+
+    def from_requirements(self, requirement_strings):
+        ws = pkg_resources.working_set
+        requirements = set(pkg_resources.Requirement.parse(req)
+                           for req in requirement_strings)
+        self.roots = self.names(requirements)
+
+        for req in requirements:
+            self.add_requirement(req)
+
+    def add_requirement(self, req):
         name = req.project_name
-        if ignored(name):
+        if self.ignored(name):
             return
-        if is_dead_end(name):
-            nodes[name] = {}
+        if self.is_dead_end(name):
+            self[name] = {}
             return
 
         dist = pkg_resources.get_distribution(req)
         plain_reqs = set(dist.requires())
         extra_reqs = set(dist.requires(req.extras)) - plain_reqs
 
-        plain_names = names(plain_reqs, ignored)
-        if name in nodes:
-            nodes[name]["extra"].update(
-                names(extra_reqs, ignored) - plain_names)
+        plain_names = self.names(plain_reqs)
+        if name in self:
+            self[name]["extra"].update(self.names(extra_reqs) - plain_names)
         else:
-            nodes[name] = {None: plain_names,
-                           "extra": names(extra_reqs, ignored) - plain_names,
-                           }
+            self[name] = {None: plain_names,
+                          "extra": self.names(extra_reqs) - plain_names,
+                          }
             for req in plain_reqs:
-                add_requirement(req)
+                self.add_requirement(req)
 
         for req in extra_reqs:
-            add_requirement(req)
+            self.add_requirement(req)
 
-    for req in requirements:
-        add_requirement(req)
+    def from_working_set(self):
+        ws = pkg_resources.working_set
+        self.roots = self.names(ws)
 
-    return roots, nodes
+        for dist in ws:
+            name = dist.project_name
+            if self.ignored(name):
+                continue
 
+            all_names = self.names(dist.requires(dist.extras))
+            self.roots -= all_names
 
-def graph_from_working_set(ignored, is_dead_end):
-    ws = pkg_resources.working_set
-    roots = names(ws, ignored)
-    nodes = {}
+            if self.is_dead_end(name):
+                self[name] = {}
+                continue
 
-    for dist in ws:
-        name = dist.project_name
-        if ignored(name):
-            return
+            plain_names = self.names(dist.requires())
+            self[name] = {None: plain_names,
+                          "extra": all_names - plain_names,
+                          }
 
-        all_names = names(dist.requires(dist.extras), ignored)
-        roots -= all_names
-
-        if name in dead_ends:
-            nodes[name] = {}
-            return
-
-        plain_names = names(dist.requires(), ignored)
-        nodes[name] = {None: plain_names,
-                       "extra": all_names - plain_names,
-                       }
-
-    return roots, nodes
-
-
-def names(collection, ignored=None):
-    return set(item.project_name for item in collection
-               if not ignored(item.project_name))
+    def names(self, collection):
+        return set(item.project_name for item in collection
+                   if not self.ignored(item.project_name))
