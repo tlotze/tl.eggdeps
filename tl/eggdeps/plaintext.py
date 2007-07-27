@@ -2,46 +2,42 @@
 # See also LICENSE.txt
 
 
-def print_subgraph(root, graph, shortest, has_tree, printed,
-                   link_type=None, depth=0):
-    print_tree = depth == shortest[root] and root not in printed
-    line = depth*"    " + root
+def print_subgraph(name, graph, shortest, printed, link_type=None, depth=0):
+    print_tree = depth == shortest[name] and name not in printed
+    root = graph[name]
+    line = depth*"    " + name
     if link_type:
-        line += " (%s)" % link_type
-    if not print_tree and root in has_tree:
+        line += " [%s]" % ','.join(sorted(link_type))
+    if not print_tree and root:
         line += " ..."
-    if graph.is_dead_end(root):
+    if root.is_dead_end:
         line += " *"
     print line
 
     if not print_tree:
         return
-    printed.add(root)
+    printed.add(name)
 
-    links = graph.get(root, {})
-    for link_type, targets in sorted(links.iteritems()):
-        for target in sorted(targets):
-            print_subgraph(target, graph, shortest, has_tree, printed,
-                           link_type, depth + 1)
+    for target, link_type in sorted(
+        root.iteritems(),
+        cmp=lambda (a, b), (c, d): cmp(sorted(b), sorted(d)) or cmp(a, c)):
+        print_subgraph(target, graph, shortest, printed, link_type, depth + 1)
 
 
-def prepare(root, graph, shortest, has_tree, depth=0):
-    if root in shortest and shortest[root] <= depth:
+def prepare(name, graph, shortest, depth=0):
+    if name in shortest and shortest[name] <= depth:
         return
-    shortest[root] = depth
-    links = graph.get(root, {})
-    for link_type, targets in links.iteritems():
-        for target in sorted(targets):
-            has_tree.add(root)
-            prepare(target, graph, shortest, has_tree, depth + 1)
+    shortest[name] = depth
+
+    for target in graph[name]:
+        prepare(target, graph, shortest, depth + 1)
 
 
 def print_graph(graph):
     shortest = {}
-    has_tree = set()
-    for root in graph.roots:
-        prepare(root, graph, shortest, has_tree)
+    for name in graph.roots:
+        prepare(name, graph, shortest)
     printed = set()
 
-    for root in sorted(graph.roots):
-        print_subgraph(root, graph, shortest, has_tree, printed)
+    for name in sorted(graph.roots):
+        print_subgraph(name, graph, shortest, printed)

@@ -15,62 +15,73 @@ class Graph(dict):
         self.roots = ()
 
     def from_requirements(self, requirement_strings):
-        ws = pkg_resources.working_set
         requirements = set(pkg_resources.Requirement.parse(req)
                            for req in requirement_strings)
         self.roots = self.names(requirements)
 
-        for req in requirements:
+        for req in self.filter(requirements):
             self.add_requirement(req)
 
     def add_requirement(self, req):
-        name = req.project_name
-        if self.ignored(name):
-            return
-        if self.is_dead_end(name):
-            self[name] = {}
+        node = self.setdefault(req.project_name, Node(self, req))
+        if node.is_dead_end:
             return
 
         dist = pkg_resources.get_distribution(req)
-        plain_reqs = set(dist.requires())
-        extra_reqs = set(dist.requires(req.extras)) - plain_reqs
+        if not node:
+            for dep in self.names(dist.requires()):
+                node[dep] = set()
 
-        plain_names = self.names(plain_reqs)
-        if name in self:
-            self[name]["extra"].update(self.names(extra_reqs) - plain_names)
-        else:
-            self[name] = {None: plain_names,
-                          "extra": self.names(extra_reqs) - plain_names,
-                          }
-            for req in plain_reqs:
-                self.add_requirement(req)
+        new_reqs = set(dist.requires())
+        plain_names = self.names(new_reqs)
+        for extra in req.extras:
+            extra_reqs = dist.requires((extra,))
+            new_reqs.update(extra_reqs)
+            for dep in self.names(extra_reqs) - plain_names:
+                node.setdefault(dep, set()).add(extra)
 
-        for req in extra_reqs:
+        new_reqs -= node.requirements
+        node.requirements.update(new_reqs)
+        for req in self.filter(new_reqs):
             self.add_requirement(req)
 
     def from_working_set(self):
-        ws = pkg_resources.working_set
+        ws = self.filter(pkg_resources.working_set)
         ws_names = self.names(ws)
         self.roots = ws_names.copy()
 
         for dist in ws:
-            name = dist.project_name
-            if self.ignored(name):
+            node = self[dist.project_name] = Node(self, dist)
+            if node.is_dead_end:
                 continue
 
-            all_names = self.names(dist.requires(dist.extras))
-            self.roots -= all_names
-
-            if self.is_dead_end(name):
-                self[name] = {}
-                continue
+            for dep in self.names(dist.requires()).intersection(ws_names):
+                node[dep] = set()
 
             plain_names = self.names(dist.requires())
-            self[name] = {
-                None: plain_names.intersection(ws_names),
-                "extra": (all_names - plain_names).intersection(ws_names),
-                }
+            for extra in dist.extras:
+                for dep in self.names(dist.requires((extra,))
+                                      ).intersection(ws_names) - plain_names:
+                    node.setdefault(dep, set()).add(extra)
+
+            self.roots -= set(node)
+
+    def filter(self, collection):
+        return set(x for x in collection if not self.ignored(x.project_name))
 
     def names(self, collection):
-        return set(item.project_name for item in collection
-                   if not self.ignored(item.project_name))
+        return set(x.project_name for x in self.filter(collection))
+
+
+class Node(dict):
+    """A graph node representing and egg and its dependencies.
+    """
+
+    @property
+    def is_dead_end(self):
+        return self.graph.is_dead_end(self.name)
+
+    def __init__(self, graph, spec):
+        self.name = spec.project_name
+        self.graph = graph
+        self.requirements = set()
