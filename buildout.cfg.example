@@ -1,0 +1,11 @@
+[buildout]
+develop = .
+parts = eggdeps test
+
+[eggdeps]
+recipe = zc.recipe.egg
+eggs = tl.eggdeps
+
+[test]
+recipe = zc.recipe.testrunner
+eggs = tl.eggdeps
