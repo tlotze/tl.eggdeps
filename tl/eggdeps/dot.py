@@ -2,7 +2,7 @@
 # See also LICENSE.txt
 
 
-def print_dot(graph, dead_ends=(), **kwargs):
+def print_dot(graph, is_dead_end):
     roots, nodes = graph
 
     print "digraph {"
@@ -12,7 +12,7 @@ def print_dot(graph, dead_ends=(), **kwargs):
         if name in roots:
             node_options["style"] = "filled"
             node_options["fillcolor"] = "green"
-        if name in dead_ends:
+        if is_dead_end(name):
             node_options["style"] = "filled"
         print name.replace(".", "_") + format_options(node_options)
 

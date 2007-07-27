@@ -37,7 +37,7 @@ def prepare(root, nodes, shortest, has_tree, depth=0):
             prepare(target, nodes, shortest, has_tree, depth + 1)
 
 
-def print_graph(graph):
+def print_graph(graph, is_dead_end):
     roots, nodes = graph
 
     shortest = {}
