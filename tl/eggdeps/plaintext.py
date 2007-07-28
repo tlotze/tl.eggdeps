@@ -2,10 +2,11 @@
 # See also LICENSE.txt
 
 
-def print_subgraph(name, graph, shortest, printed, link_type=None, depth=0):
-    print_tree = depth == shortest[name] and name not in printed
+def print_subgraph(name, graph, mount_points, link_type=None, path=()):
+    print_tree = path == mount_points[name]
     root = graph[name]
-    line = depth*"    "
+
+    line = len(path) * "    "
     if root.is_active:
         line += name
     else:
@@ -20,28 +21,43 @@ def print_subgraph(name, graph, shortest, printed, link_type=None, depth=0):
 
     if not print_tree:
         return
-    printed.add(name)
 
     for target, link_type in sorted(
         root.iteritems(),
         cmp=lambda (a, b), (c, d): cmp(sorted(b), sorted(d)) or cmp(a, c)):
-        print_subgraph(target, graph, shortest, printed, link_type, depth + 1)
+        print_subgraph(target, graph, mount_points, link_type, path + (name,))
 
 
-def prepare(name, graph, shortest, depth=0):
-    if name in shortest and shortest[name] <= depth:
+def find_mount_point(name, graph, mount_points, plain_mounts,
+                     path=(), is_plain=True):
+    # prefer paths without extra dependencies
+    if name in plain_mounts and not is_plain:
         return
-    shortest[name] = depth
 
-    for target in graph[name]:
-        prepare(target, graph, shortest, depth + 1)
+    mount_point = mount_points.get(name)
+    if mount_point is not None:
+        # prefer short paths
+        if len(path) > len(mount_point):
+            return
+        # prefer alphabetically first among paths of equal length
+        if len(path) == len(mount_point) and path > mount_point:
+            return
+
+    mount_points[name] = path
+    if is_plain:
+        plain_mounts.add(name)
+
+    path += (name,)
+    for dep, extras in graph[name].iteritems():
+        find_mount_point(dep, graph, mount_points, plain_mounts,
+                         path, is_plain and not extras)
 
 
 def print_graph(graph):
-    shortest = {}
+    mount_points = {}
+    plain_mounts = set()
     for name in graph.roots:
-        prepare(name, graph, shortest)
-    printed = set()
+        find_mount_point(name, graph, mount_points, plain_mounts)
 
     for name in sorted(graph.roots):
-        print_subgraph(name, graph, shortest, printed)
+        print_subgraph(name, graph, mount_points)
