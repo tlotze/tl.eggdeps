@@ -10,7 +10,7 @@ class Graph(dict):
     """
 
     def __init__(self,
-                 working_set=pkg_resources.working_set,
+                 working_set=None,
                  ignored=lambda name: False,
                  is_dead_end=lambda name: False,
                  extras=True,
@@ -18,7 +18,7 @@ class Graph(dict):
         self.ignored = ignored
         self.is_dead_end = is_dead_end
         self.extras = extras
-        self.working_set = working_set
+        self.working_set = working_set or pkg_resources.WorkingSet()
         self.roots = ()
 
     def from_requirements(self, specs):
