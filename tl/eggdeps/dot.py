@@ -7,6 +7,8 @@ def print_dot(graph):
 
     for node in graph.itervalues():
         node_options = dict(label=node.name)
+        if not node.is_active:
+            node_options["color"] = "lightgrey"
         if node.name in graph.roots:
             node_options["style"] = "filled"
             node_options["fillcolor"] = "green"

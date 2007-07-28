@@ -30,7 +30,7 @@ class Graph(dict):
 
     def add_requirement(self, req):
         node = self.setdefault(req.project_name, Node(self, req))
-        if node.is_dead_end:
+        if node.is_dead_end or not node.is_active:
             return
 
         dist = self.working_set.find(req)
@@ -89,7 +89,12 @@ class Node(dict):
     def is_dead_end(self):
         return self.graph.is_dead_end(self.name)
 
+    @property
+    def is_active(self):
+        return bool(self.graph.working_set.find(self.req))
+
     def __init__(self, graph, spec):
         self.name = spec.project_name
         self.graph = graph
+        self.req = pkg_resources.Requirement.parse(self.name)
         self.requirements = set()

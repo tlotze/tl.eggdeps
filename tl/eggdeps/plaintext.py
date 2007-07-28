@@ -5,7 +5,11 @@
 def print_subgraph(name, graph, shortest, printed, link_type=None, depth=0):
     print_tree = depth == shortest[name] and name not in printed
     root = graph[name]
-    line = depth*"    " + name
+    line = depth*"    "
+    if root.is_active:
+        line += name
+    else:
+        line += "(%s)" % name
     if link_type:
         line += " [%s]" % ','.join(sorted(link_type))
     if not print_tree and root:
