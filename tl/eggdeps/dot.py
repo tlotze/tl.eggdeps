@@ -3,17 +3,27 @@
 
 
 def print_dot(graph):
+    direct_deps = set()
+    for name in graph.roots:
+        direct_deps.update(graph[name])
+
     print "digraph {"
 
     for node in graph.itervalues():
         node_options = dict(label=node.name)
-        if not node.is_active:
-            node_options["color"] = "lightgrey"
+
+        def fill(color):
+            node_options["style"] = "filled"
+            node_options["fillcolor"] = color
+        if node.name in direct_deps:
+            fill("yellow")
         if node.name in graph.roots:
-            node_options["style"] = "filled"
-            node_options["fillcolor"] = "green"
+            fill("green")
         if node.is_dead_end:
-            node_options["style"] = "filled"
+            fill("lightgrey")
+        if not node.is_active:
+            fill("red")
+
         print node.name.replace(".", "_") + format_options(node_options)
 
         for dep, extras in node.iteritems():
