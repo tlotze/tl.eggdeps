@@ -30,6 +30,10 @@ def eggdeps():
     parser.add_option("-d", "--dot",
                       dest="dot", action="store_true", default=False,
                       help="whether to produce a dot file")
+    parser.add_option("-c", "--cluster",
+                      dest="cluster", action="store_true", default=False,
+                      help="in a dot graph, whether to cluster "
+                           "direct dependencies of each root")
     options, specifications = parser.parse_args()
 
     ignored = matcher(options.ignore, options.re_ignore)
@@ -46,7 +50,7 @@ def eggdeps():
         graph.from_working_set()
 
     if options.dot:
-        tl.eggdeps.dot.print_dot(graph)
+        tl.eggdeps.dot.print_dot(graph, cluster=options.cluster)
     else:
         tl.eggdeps.plaintext.print_graph(graph)
 
