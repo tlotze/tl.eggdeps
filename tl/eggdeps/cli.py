@@ -10,7 +10,7 @@ import tl.eggdeps.plaintext
 
 
 def eggdeps():
-    parser = optparse.OptionParser("usage: %prog [options] [requirements]")
+    parser = optparse.OptionParser("usage: %prog [options] [specifications]")
     parser.add_option("-i", "--ignore",
                       dest="ignore", action="append", default=[],
                       help="project names to ignore")
@@ -30,7 +30,7 @@ def eggdeps():
     parser.add_option("-d", "--dot",
                       dest="dot", action="store_true", default=False,
                       help="whether to produce a dot file")
-    options, requirements = parser.parse_args()
+    options, specifications = parser.parse_args()
 
     ignored = matcher(options.ignore, options.re_ignore)
     is_dead_end = matcher(options.dead_ends, options.re_dead_ends)
@@ -40,8 +40,8 @@ def eggdeps():
                                    extras=options.extras,
                                    )
 
-    if requirements:
-        graph.from_requirements(requirements)
+    if specifications:
+        graph.from_specifications(specifications)
     else:
         graph.from_working_set()
 

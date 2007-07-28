@@ -16,13 +16,13 @@ def print_dot(graph):
             node_options["style"] = "filled"
         print node.name.replace(".", "_") + format_options(node_options)
 
-        for target, link_type in node.iteritems():
+        for dep, extras in node.iteritems():
             edge_options = {}
-            if link_type:
+            if extras:
                 edge_options["color"] = "lightgrey"
 
             print "%s -> %s%s" % (node.name.replace(".", "_"),
-                                  target.replace(".", "_"),
+                                  dep.replace(".", "_"),
                                   format_options(edge_options))
 
     print "}"

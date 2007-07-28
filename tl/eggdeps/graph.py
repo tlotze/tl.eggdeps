@@ -21,8 +21,8 @@ class Graph(dict):
         self.working_set = working_set or pkg_resources.WorkingSet()
         self.roots = ()
 
-    def from_requirements(self, specs):
-        requirements = set(pkg_resources.parse_requirements(specs))
+    def from_specifications(self, specifications):
+        requirements = set(pkg_resources.parse_requirements(specifications))
         self.roots = self.names(requirements)
 
         for req in self.filter(requirements):

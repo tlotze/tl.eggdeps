@@ -2,7 +2,7 @@
 # See also LICENSE.txt
 
 
-def print_subgraph(name, graph, mount_points, link_type=None, path=()):
+def print_subgraph(name, graph, mount_points, extras=None, path=()):
     print_tree = path == mount_points[name]
     root = graph[name]
 
@@ -11,8 +11,8 @@ def print_subgraph(name, graph, mount_points, link_type=None, path=()):
         line += name
     else:
         line += "(%s)" % name
-    if link_type:
-        line += " [%s]" % ','.join(sorted(link_type))
+    if extras:
+        line += " [%s]" % ','.join(sorted(extras))
     if not print_tree and root:
         line += " ..."
     if root.is_dead_end:
@@ -22,10 +22,10 @@ def print_subgraph(name, graph, mount_points, link_type=None, path=()):
     if not print_tree:
         return
 
-    for target, link_type in sorted(
+    for dep, extras in sorted(
         root.iteritems(),
         cmp=lambda (a, b), (c, d): cmp(sorted(b), sorted(d)) or cmp(a, c)):
-        print_subgraph(target, graph, mount_points, link_type, path + (name,))
+        print_subgraph(dep, graph, mount_points, extras, path + (name,))
 
 
 def find_mount_point(name, graph, mount_points, plain_mounts,
