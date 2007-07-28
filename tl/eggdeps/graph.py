@@ -30,19 +30,18 @@ class Graph(dict):
 
     def add_requirement(self, req):
         node = self.setdefault(req.project_name, Node(self, req))
-        if node.is_dead_end or not node.is_active:
+        if node.is_dead_end or not node.dist:
             return
 
-        dist = self.working_set.find(req)
         if not node:
-            for dep in self.names(dist.requires()):
+            for dep in self.names(node.dist.requires()):
                 node[dep] = set()
 
-        new_reqs = set(dist.requires())
+        new_reqs = set(node.dist.requires())
         if self.extras:
             plain_names = self.names(new_reqs)
             for extra in req.extras:
-                extra_reqs = dist.requires((extra,))
+                extra_reqs = node.dist.requires((extra,))
                 new_reqs |= extra_reqs
                 for dep in self.names(extra_reqs) - plain_names:
                     node.setdefault(dep, set()).add(extra)
@@ -85,16 +84,16 @@ class Node(dict):
     """A graph node representing and egg and its dependencies.
     """
 
-    @property
-    def is_dead_end(self):
-        return self.graph.is_dead_end(self.name)
-
-    @property
-    def is_active(self):
-        return bool(self.graph.working_set.find(self.req))
-
     def __init__(self, graph, spec):
         self.name = spec.project_name
         self.graph = graph
-        self.req = pkg_resources.Requirement.parse(self.name)
         self.requirements = set()
+        self.is_dead_end = self.graph.is_dead_end(self.name)
+        if isinstance(spec, pkg_resources.Distribution):
+            self.req = spec.as_requirement()
+        else:
+            self.req = spec
+        try:
+            self.dist = self.graph.working_set.find(self.req)
+        except pkg_resources.VersionConflict:
+            self.dist = None

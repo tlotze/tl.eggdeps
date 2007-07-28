@@ -21,7 +21,7 @@ def print_dot(graph, cluster=False):
             fill("green")
         if node.is_dead_end:
             fill("lightgrey")
-        if not node.is_active:
+        if not node.dist:
             fill("red")
 
         print node.name.replace(".", "_") + format_options(node_options)
