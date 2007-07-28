@@ -43,12 +43,12 @@ class Graph(dict):
             plain_names = self.names(new_reqs)
             for extra in req.extras:
                 extra_reqs = dist.requires((extra,))
-                new_reqs.update(extra_reqs)
+                new_reqs |= extra_reqs
                 for dep in self.names(extra_reqs) - plain_names:
                     node.setdefault(dep, set()).add(extra)
 
         new_reqs -= node.requirements
-        node.requirements.update(new_reqs)
+        node.requirements |= new_reqs
         for req in self.filter(new_reqs):
             self.add_requirement(req)
 
@@ -62,14 +62,14 @@ class Graph(dict):
             if node.is_dead_end:
                 continue
 
-            for dep in self.names(dist.requires()).intersection(ws_names):
+            for dep in self.names(dist.requires()) & ws_names:
                 node[dep] = set()
 
             plain_names = self.names(dist.requires())
             if self.extras:
                 for extra in dist.extras:
-                    for dep in self.names(dist.requires((extra,))).\
-                            intersection(ws_names) - plain_names:
+                    for dep in (self.names(dist.requires((extra,)))
+                                & ws_names - plain_names):
                         node.setdefault(dep, set()).add(extra)
 
             self.roots -= set(node)
