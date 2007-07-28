@@ -35,7 +35,10 @@ def eggdeps():
     ignored = matcher(options.ignore, options.re_ignore)
     is_dead_end = matcher(options.dead_ends, options.re_dead_ends)
 
-    graph = tl.eggdeps.graph.Graph(ignored, is_dead_end, options.extras)
+    graph = tl.eggdeps.graph.Graph(ignored=ignored,
+                                   is_dead_end=is_dead_end,
+                                   extras=options.extras,
+                                   )
 
     if requirements:
         graph.from_requirements(requirements)

@@ -9,15 +9,20 @@ class Graph(dict):
     """A graph of egg dependencies.
     """
 
-    def __init__(self, ignored, is_dead_end, extras):
+    def __init__(self,
+                 working_set=pkg_resources.working_set,
+                 ignored=lambda name: False,
+                 is_dead_end=lambda name: False,
+                 extras=True,
+                 ):
         self.ignored = ignored
         self.is_dead_end = is_dead_end
         self.extras = extras
+        self.working_set = working_set
         self.roots = ()
 
-    def from_requirements(self, requirement_strings):
-        requirements = set(pkg_resources.Requirement.parse(req)
-                           for req in requirement_strings)
+    def from_requirements(self, specs):
+        requirements = set(pkg_resources.parse_requirements(specs))
         self.roots = self.names(requirements)
 
         for req in self.filter(requirements):
@@ -28,7 +33,7 @@ class Graph(dict):
         if node.is_dead_end:
             return
 
-        dist = pkg_resources.get_distribution(req)
+        dist = self.working_set.find(req)
         if not node:
             for dep in self.names(dist.requires()):
                 node[dep] = set()
@@ -48,7 +53,7 @@ class Graph(dict):
             self.add_requirement(req)
 
     def from_working_set(self):
-        ws = self.filter(pkg_resources.working_set)
+        ws = self.filter(self.working_set)
         ws_names = self.names(ws)
         self.roots = ws_names.copy()
 
