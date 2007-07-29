@@ -16,24 +16,24 @@ def eggdeps():
                       help="project names to ignore")
     parser.add_option("-I", "--re-ignore",
                       dest="re_ignore", action="append", default=[],
-                      help="project name pattern to ignore")
+                      help="regular expression for project names to ignore")
     parser.add_option("-e", "--dead-end",
                       dest="dead_ends", action="append", default=[],
                       help="names of projects whose dependencies to ignore")
     parser.add_option("-E", "--re-dead-end",
                       dest="re_dead_ends", action="append", default=[],
-                      help="name patterns of projects "
+                      help="regular expression for project names "
                            "whose dependencies to ignore")
     parser.add_option("-n", "--no-extras",
                       dest="extras", action="store_false", default=True,
-                      help="whether to always omit extra dependencies")
+                      help="always omit extra dependencies")
     parser.add_option("-d", "--dot",
                       dest="dot", action="store_true", default=False,
-                      help="whether to produce a dot file")
+                      help="produce a dot graph")
     parser.add_option("-c", "--cluster",
                       dest="cluster", action="store_true", default=False,
-                      help="in a dot graph, whether to cluster "
-                           "direct dependencies of each root")
+                      help="in a dot graph, cluster direct dependencies "
+                           "of each root distribution")
     options, specifications = parser.parse_args()
 
     ignored = matcher(options.ignore, options.re_ignore)
