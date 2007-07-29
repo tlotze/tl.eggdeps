@@ -10,26 +10,26 @@ global working set of active distributions defined by pkg_requires:
 
   >>> from tl.eggdeps.graph import Graph
   >>> graph = Graph()
-  >>> sorted(graph.working_set, cmp=lambda a, b: cmp(a.project_name, b.project_name))
-  [...tl.eggdeps ... setuptools ... zope.testing ...]
+  >>> sort_specs(graph.working_set)
+  [...setuptools ... tl.eggdeps ... zope.testing ...]
 
 For testing the graph builder, we will use custom working sets and
 distributions. Using the convenience distribution factory defined by our test
 setup, we pass a working set of some mock distributions to the graph builder:
 
-  >>> foo_1 = make_dist("foo-1.egg", depends="bar")
-  >>> bar_2 = make_dist("bar-2.egg", depends="""baz>1.5
-  ...                                           [extra]
-  ...                                           whiz[bang]""")
+  >>> anton_1 = make_dist("anton-1.egg", depends="berta")
+  >>> berta_2 = make_dist("berta-2.egg", depends="""charlie>1.5
+  ...                                               [extra]
+  ...                                               dora[emil]""")
 
   >>> import pkg_resources
   >>> ws = pkg_resources.WorkingSet([])
-  >>> ws.add(foo_1)
-  >>> ws.add(bar_2)
+  >>> ws.add(anton_1)
+  >>> ws.add(berta_2)
 
   >>> graph = Graph(working_set=ws)
-  >>> sorted(graph.working_set)
-  [foo 1 (.../foo-1.egg), bar 2 (.../bar-2.egg)]
+  >>> sort_specs(graph.working_set)
+  [anton 1 (.../anton-1.egg), berta 2 (.../berta-2.egg)]
 
 
 .. Local Variables:
