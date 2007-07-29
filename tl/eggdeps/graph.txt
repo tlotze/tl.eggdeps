@@ -10,7 +10,7 @@ global working set of active distributions defined by pkg_requires:
 
   >>> from tl.eggdeps.graph import Graph
   >>> graph = Graph()
-  >>> sorted(graph.working_set)
+  >>> sorted(graph.working_set, cmp=lambda a, b: cmp(a.project_name, b.project_name))
   [...tl.eggdeps ... setuptools ... zope.testing ...]
 
 For testing the graph builder, we will use custom working sets and
