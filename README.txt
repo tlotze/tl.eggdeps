@@ -113,4 +113,4 @@ Contact
 This package is written by Thomas Lotze. Please contact the author at
 <thomas@thomas-lotze.de> to provide feedback, suggestions, or contributions.
 
-See also <http://www.thomas-lotze.de/en/software/>.
+See also <http://www.thomas-lotze.de/en/software/eggdeps/>.
