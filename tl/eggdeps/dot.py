@@ -19,7 +19,7 @@ def print_dot(graph, cluster=False):
             fill("yellow")
         if node.name in graph.roots:
             fill("green")
-        if node.is_dead_end:
+        if not node.follow:
             fill("lightgrey")
         if not node.dist:
             fill("red")

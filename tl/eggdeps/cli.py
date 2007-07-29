@@ -36,11 +36,11 @@ def eggdeps():
                            "of each root distribution")
     options, specifications = parser.parse_args()
 
-    ignored = matcher(options.ignore, options.re_ignore)
-    is_dead_end = matcher(options.dead_ends, options.re_dead_ends)
+    show = unmatcher(options.ignore, options.re_ignore)
+    follow = unmatcher(options.dead_ends, options.re_dead_ends)
 
-    graph = tl.eggdeps.graph.Graph(ignored=ignored,
-                                   is_dead_end=is_dead_end,
+    graph = tl.eggdeps.graph.Graph(show=show,
+                                   follow=follow,
                                    extras=options.extras,
                                    )
 
@@ -55,18 +55,18 @@ def eggdeps():
         tl.eggdeps.plaintext.print_graph(graph)
 
 
-def matcher(names, patterns):
+def unmatcher(names, patterns):
     names = set(names)
     compiled_patterns = [re.compile(pattern) for pattern in patterns]
 
-    def match(name):
+    def unmatch(name):
         if name in names:
-            return True
+            return False
 
         for re in compiled_patterns:
             if re.search(name):
-                return True
+                return False
 
-        return False
+        return True
 
-    return match
+    return unmatch

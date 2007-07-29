@@ -11,28 +11,27 @@ class Graph(dict):
 
     def __init__(self,
                  working_set=None,
-                 ignored=lambda name: False,
-                 is_dead_end=lambda name: False,
+                 show=lambda name: True,
+                 follow=lambda name: True,
                  extras=True,
                  ):
-        self.ignored = ignored
-        self.is_dead_end = is_dead_end
-        self.extras = extras
         self.working_set = working_set or pkg_resources.WorkingSet()
+        self.show = show
+        self.follow = follow
+        self.extras = extras
         self.roots = ()
-        self.shown = lambda name: not ignored(name)
-        self.dist_shown = lambda spec: not ignored(spec.project_name)
+        self.show_dist = lambda spec: show(spec.project_name)
 
     def from_specifications(self, specifications):
         requirements = set(pkg_resources.parse_requirements(specifications))
         self.roots = self.names(requirements)
 
-        for req in filter(self.dist_shown, requirements):
+        for req in filter(self.show_dist, requirements):
             self.add_requirement(req)
 
     def add_requirement(self, req):
         node = self.setdefault(req.project_name, Node(self, req))
-        if node.is_dead_end or not node.dist:
+        if not (node.follow and node.dist):
             return
 
         if not node:
@@ -50,17 +49,17 @@ class Graph(dict):
 
         new_reqs -= node.requires
         node.requires |= new_reqs
-        for req in filter(self.dist_shown, new_reqs):
+        for req in filter(self.show_dist, new_reqs):
             self.add_requirement(req)
 
     def from_working_set(self):
-        ws = filter(self.dist_shown, self.working_set)
+        ws = filter(self.show_dist, self.working_set)
         ws_names = self.names(ws)
         self.roots = ws_names.copy()
 
         for dist in ws:
             node = self[dist.project_name] = Node(self, dist)
-            if node.is_dead_end:
+            if not node.follow:
                 continue
 
             for dep in self.names(dist.requires()) & ws_names:
@@ -76,7 +75,7 @@ class Graph(dict):
             self.roots -= set(node)
 
     def names(self, collection):
-        return set(filter(self.shown, (x.project_name for x in collection)))
+        return set(filter(self.show, (x.project_name for x in collection)))
 
 
 class Node(dict):
@@ -87,7 +86,7 @@ class Node(dict):
         self.name = spec.project_name
         self.graph = graph
         self.requires = set()
-        self.is_dead_end = self.graph.is_dead_end(self.name)
+        self.follow = self.graph.follow(self.name)
 
         # Find a distribution matching the spec in the working set. Search
         # even if the spec is already a distribution to make sure it's active.

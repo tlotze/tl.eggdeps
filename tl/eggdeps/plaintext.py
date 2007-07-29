@@ -15,7 +15,7 @@ def print_subgraph(name, graph, mount_points, extras=None, path=()):
         line += " [%s]" % ','.join(sorted(extras))
     if not print_tree and root:
         line += " ..."
-    if root.is_dead_end:
+    if not root.follow:
         line += " *"
     print line
 
