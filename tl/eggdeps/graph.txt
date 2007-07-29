@@ -6,7 +6,7 @@ Specifying the working set
 ==========================
 
 When a graph is instantiated without any working set given, it will use the
-global working set of active distributions defined by pkg_requires:
+global working set of active distributions defined by pkg_resources:
 
   >>> from tl.eggdeps.graph import Graph
   >>> graph = Graph()
@@ -20,16 +20,150 @@ setup, we pass a working set of some mock distributions to the graph builder:
   >>> anton_1 = make_dist("anton-1.egg", depends="berta")
   >>> berta_2 = make_dist("berta-2.egg", depends="""charlie>1.5
   ...                                               [extra]
-  ...                                               dora[emil]""")
-
-  >>> import pkg_resources
-  >>> ws = pkg_resources.WorkingSet([])
-  >>> ws.add(anton_1)
-  >>> ws.add(berta_2)
+  ...                                               dora[test]""")
+  >>> ws = make_working_set(anton_1, berta_2)
 
   >>> graph = Graph(working_set=ws)
   >>> sort_specs(graph.working_set)
   [anton 1 (.../anton-1.egg), berta 2 (.../berta-2.egg)]
+
+
+Extracting project names from specifications
+============================================
+
+Graphs have a method that extracts project names from an iterable of
+distributions or requirements and returns them as a set:
+
+  >>> graph.names(ws)
+  set([...])
+  >>> sprint(graph.names(ws))
+  set(['anton', 'berta'])
+
+A Graph instance has a filter function that determines by project name which
+distributions to include in the graph. This filter applies to the project
+names returned by the names method. As it allows any distribution by default,
+we have to specify something interesting to see an effect:
+
+  >>> graph = Graph(ws, show=lambda name: name < "b")
+  >>> graph.names(ws)
+  set(['anton'])
+
+
+Analysing the working set
+=========================
+
+A dependency graph may be built from the complete working set by finding all
+possible dependencies between any distributions. The graph will be a mapping
+from project names to node objects which describe each node's dependencies.
+Node objects in turn are mappings from project names of each dependency to a
+set of dependency descriptions. The empty set signals a direct dependency, a
+set of names means that the dependency is by way of any of the named extras.
+Dependencies which are not active will be ignored.
+
+  >>> dora_0_5 = make_dist("dora-0.5.egg")
+  >>> ws = make_working_set(anton_1, berta_2, dora_0_5)
+
+  >>> graph = Graph(ws)
+  >>> graph.from_working_set()
+  >>> sprint(graph)
+  {'anton': {'berta': set([])},
+   'berta': {'dora': set(['extra'])},
+   'dora': {}}
+
+The graph has a set of roots, which are the names of those distributions that
+are not a dependency of any other node:
+
+  >>> graph.roots
+  set(['anton'])
+
+If a distribution depends on another one both directly and by some extras
+(which is possible though not very useful), the dependency is considered a
+plain direct dependency:
+
+  >>> emil_1 = make_dist("emil-1.egg", """anton
+  ...                                     [pointless-extra]
+  ...                                     anton""")
+  >>> ws = make_working_set(anton_1, emil_1)
+
+  >>> graph = Graph(ws)
+  >>> graph.from_working_set()
+  >>> sprint(graph)
+  {'anton': {},
+   'emil': {'anton': set([])}}
+  >>> graph.roots
+  set(['emil'])
+
+XXX Dependencies from a working set analysis do not yet take into account
+versions. The following should not report a dependency of berta on charlie as
+berta requires at least charlie 1.5:
+
+  >>> charlie_1_4 = make_dist("charlie-1.4.egg")
+  >>> ws = make_working_set(berta_2, charlie_1_4)
+
+  >>> graph = Graph(ws)
+  >>> graph.from_working_set()
+  >>> sprint(graph)
+  {'berta': {'charlie': set([])},
+   'charlie': {}}
+
+
+Analysing specific distributions' dependencies
+==============================================
+
+The second way of building a dependency graph is by inspecting the
+dependencies of one or more specified distributions. In this scenario,
+unrelated active distributions are ignored (which is anton in this example):
+
+  >>> charlie_1_6 = make_dist("charlie-1.6.egg")
+  >>> ws = make_working_set(anton_1, berta_2, charlie_1_6)
+
+  >>> graph = Graph(ws)
+  >>> graph.from_specifications("berta")
+  >>> sprint(graph)
+  {'berta': {'charlie': set([])},
+   'charlie': {}}
+
+The roots of the graph are the specified distributions now:
+
+  >>> graph.roots
+  set(['berta'])
+
+On the other hand, required distributions which are not in the working set are
+included now. In the example, this applies to dora:
+
+  >>> graph = Graph(ws)
+  >>> graph.from_specifications("berta [extra]")
+  >>> sprint(graph)
+  {'berta': {'charlie': set([]),
+             'dora': set(['extra'])},
+   'charlie': {},
+   'dora': {}}
+  >>> graph.roots
+  set(['berta'])
+
+Node objects store their associated distribution on an attribute. Since dora
+is inactive it doesn't have one, in contrast to berta and charlie:
+
+  >>> graph["berta"].dist
+  berta 2 (.../berta-2.egg)
+  >>> graph["charlie"].dist
+  charlie 1.6 (.../charlie-1.6.egg)
+  >>> graph["dora"].dist
+
+If a version of charlie incompatible to the requirement by berta is active,
+charlie is treated as if it wasn't active at all:
+
+  >>> ws = make_working_set(berta_2, charlie_1_4)
+  >>> graph = Graph(ws)
+  >>> graph.from_specifications("berta")
+  >>> sprint(graph)
+  {'berta': {'charlie': set([])},
+   'charlie': {}}
+
+  >>> graph["charlie"].dist
+
+XXX This doesn't yet work reliably in the case of conflicting requirements
+where the first one found decides whether the active version is compatible.
 
 
 .. Local Variables:

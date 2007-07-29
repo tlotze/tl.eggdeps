@@ -45,7 +45,7 @@ def eggdeps():
                                    )
 
     if specifications:
-        graph.from_specifications(specifications)
+        graph.from_specifications(*specifications)
     else:
         graph.from_working_set()
 

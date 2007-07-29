@@ -22,7 +22,7 @@ class Graph(dict):
         self.roots = ()
         self.show_dist = lambda spec: show(spec.project_name)
 
-    def from_specifications(self, specifications):
+    def from_specifications(self, *specifications):
         requirements = set(pkg_resources.parse_requirements(specifications))
         self.roots = self.names(requirements)
 
@@ -43,7 +43,7 @@ class Graph(dict):
             plain_names = self.names(new_reqs)
             for extra in req.extras:
                 extra_reqs = node.dist.requires((extra,))
-                new_reqs |= extra_reqs
+                new_reqs.update(extra_reqs)
                 for dep in self.names(extra_reqs) - plain_names:
                     node.setdefault(dep, set()).add(extra)
 
