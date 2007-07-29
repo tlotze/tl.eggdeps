@@ -5,13 +5,34 @@ import unittest
 import doctest
 from zope.testing.doctest import DocFileSuite
 
+import pkg_resources
+import setuptools.tests.test_resources
 
-flags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS
+
+def make_dist(filename, depends=""):
+    metadata = setuptools.tests.test_resources.Metadata(("depends.txt",
+                                                         depends))
+    return pkg_resources.Distribution.from_filename(filename,
+                                                    metadata=metadata)
+
+
+def setUp(test):
+    test.globs.update(dict(
+        make_dist=make_dist,
+        ))
+
 
 def test_suite():
-    return unittest.TestSuite((
-        DocFileSuite("graph.txt", package="tl.eggdeps", optionflags=flags),
-        ))
+    return unittest.TestSuite([
+        DocFileSuite(filename,
+                     package="tl.eggdeps",
+                     setUp=setUp,
+                     optionflags=doctest.NORMALIZE_WHITESPACE |
+                                 doctest.ELLIPSIS,
+                     )
+        for filename in (
+        "graph.txt",
+        )])
 
 
 if __name__ == '__main__':
