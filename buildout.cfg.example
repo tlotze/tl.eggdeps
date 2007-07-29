@@ -8,4 +8,4 @@ eggs = tl.eggdeps
 
 [test]
 recipe = zc.recipe.testrunner
-eggs = tl.eggdeps
+eggs = tl.eggdeps [test]

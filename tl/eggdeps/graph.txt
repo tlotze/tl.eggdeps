@@ -1,0 +1,20 @@
+==============================
+Computing the dependency graph
+==============================
+
+Specifying the working set
+==========================
+
+When a graph is instantiated without any working set given, it will use the
+global working set of active distributions defined by pkg_requires:
+
+>>> import tl.eggdeps.graph
+>>> graph = tl.eggdeps.graph.Graph()
+>>> sorted(graph.working_set)
+[...tl.eggdeps ... setuptools ... zope.testing ...]
+
+
+
+.. Local Variables:
+.. mode: rst
+.. End:

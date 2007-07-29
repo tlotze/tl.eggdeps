@@ -38,6 +38,14 @@ install_requires = [
     "setuptools",
     ]
 
+extras_require = {
+    "test": ["zope.testing"],
+    }
+
+tests_require = [
+    "zope.testing",
+    ]
+
 classifiers = [
     "Development Status :: 3 - Alpha",
     ]
@@ -55,6 +63,8 @@ setup(name="tl.eggdeps",
       packages=find_packages(),
       entry_points=entry_points,
       install_requires=install_requires,
+      extras_require=extras_require,
+      tests_require=tests_require,
       include_package_data=True,
       data_files=data_files,
       test_suite="tl.eggdeps.tests.test_suite",
