@@ -20,12 +20,14 @@ class Graph(dict):
         self.extras = extras
         self.working_set = working_set or pkg_resources.WorkingSet()
         self.roots = ()
+        self.shown = lambda name: not ignored(name)
+        self.dist_shown = lambda spec: not ignored(spec.project_name)
 
     def from_specifications(self, specifications):
         requirements = set(pkg_resources.parse_requirements(specifications))
         self.roots = self.names(requirements)
 
-        for req in self.filter(requirements):
+        for req in filter(self.dist_shown, requirements):
             self.add_requirement(req)
 
     def add_requirement(self, req):
@@ -48,11 +50,11 @@ class Graph(dict):
 
         new_reqs -= node.requires
         node.requires |= new_reqs
-        for req in self.filter(new_reqs):
+        for req in filter(self.dist_shown, new_reqs):
             self.add_requirement(req)
 
     def from_working_set(self):
-        ws = self.filter(self.working_set)
+        ws = filter(self.dist_shown, self.working_set)
         ws_names = self.names(ws)
         self.roots = ws_names.copy()
 
@@ -73,11 +75,8 @@ class Graph(dict):
 
             self.roots -= set(node)
 
-    def filter(self, collection):
-        return set(x for x in collection if not self.ignored(x.project_name))
-
     def names(self, collection):
-        return set(x.project_name for x in self.filter(collection))
+        return set(filter(self.shown, (x.project_name for x in collection)))
 
 
 class Node(dict):
