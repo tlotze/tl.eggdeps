@@ -46,8 +46,8 @@ class Graph(dict):
                 for dep in self.names(extra_reqs) - plain_names:
                     node.setdefault(dep, set()).add(extra)
 
-        new_reqs -= node.requirements
-        node.requirements |= new_reqs
+        new_reqs -= node.requires
+        node.requires |= new_reqs
         for req in self.filter(new_reqs):
             self.add_requirement(req)
 
@@ -87,13 +87,14 @@ class Node(dict):
     def __init__(self, graph, spec):
         self.name = spec.project_name
         self.graph = graph
-        self.requirements = set()
+        self.requires = set()
         self.is_dead_end = self.graph.is_dead_end(self.name)
+
+        # Find a distribution matching the spec in the working set. Search
+        # even if the spec is already a distribution to make sure it's active.
         if isinstance(spec, pkg_resources.Distribution):
-            self.req = spec.as_requirement()
-        else:
-            self.req = spec
+            spec = spec.as_requirement()
         try:
-            self.dist = self.graph.working_set.find(self.req)
+            self.dist = self.graph.working_set.find(spec)
         except pkg_resources.VersionConflict:
             self.dist = None
