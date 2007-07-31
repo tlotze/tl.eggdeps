@@ -8,7 +8,12 @@ Changes between versions
 User visible:
   - improved documentation
 
-Bugs:
+  - renamed the short option for --no-extras to -x
+
+  - added an option -n or --print-version for printing version numbers of
+    active distributions along with the project name
+
+Bug fixes:
   - consider dependencies broken in the case of a version conflict
 
 Organisation:

@@ -2,15 +2,21 @@
 # See also LICENSE.txt
 
 
-def print_subgraph(name, graph, mount_points, extras=None, path=()):
+def print_subgraph(name, graph, mount_points, extras=None, path=(),
+                   print_version=False):
     print_tree = path == mount_points[name]
     root = graph[name]
 
+    if print_version and root.dist:
+        name_string = "%s %s" % (root.name, root.dist.version)
+    else:
+        name_string = root.name
+
     line = len(path) * "    "
     if root.compatible:
-        line += name
+        line += name_string
     else:
-        line += "(%s)" % name
+        line += "(%s)" % name_string
     if extras:
         line += " [%s]" % ','.join(sorted(extras))
     if not print_tree and root:
@@ -25,7 +31,8 @@ def print_subgraph(name, graph, mount_points, extras=None, path=()):
     for dep, extras in sorted(
         root.iteritems(),
         cmp=lambda (a, b), (c, d): cmp(sorted(b), sorted(d)) or cmp(a, c)):
-        print_subgraph(dep, graph, mount_points, extras, path + (name,))
+        print_subgraph(dep, graph, mount_points, extras, path + (name,),
+                       print_version=print_version)
 
 
 def find_mount_point(name, graph, mount_points, plain_mounts,
@@ -53,11 +60,12 @@ def find_mount_point(name, graph, mount_points, plain_mounts,
                          path, is_plain and not extras)
 
 
-def print_graph(graph):
+def print_graph(graph, print_version=False):
     mount_points = {}
     plain_mounts = set()
     for name in graph.roots:
         find_mount_point(name, graph, mount_points, plain_mounts)
 
     for name in sorted(graph.roots):
-        print_subgraph(name, graph, mount_points)
+        print_subgraph(name, graph, mount_points,
+                       print_version=print_version)

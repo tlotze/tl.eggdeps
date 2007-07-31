@@ -24,9 +24,13 @@ def eggdeps():
                       dest="re_dead_ends", action="append", default=[],
                       help="regular expression for project names "
                            "whose dependencies to ignore")
-    parser.add_option("-n", "--no-extras",
+    parser.add_option("-x", "--no-extras",
                       dest="extras", action="store_false", default=True,
                       help="always omit extra dependencies")
+    parser.add_option("-n", "--print-version",
+                      dest="print_version", action="store_true",
+                      default=False,
+                      help="print version numbers of active distributions")
     parser.add_option("-d", "--dot",
                       dest="dot", action="store_true", default=False,
                       help="produce a dot graph")
@@ -50,9 +54,16 @@ def eggdeps():
         graph.from_working_set()
 
     if options.dot:
-        tl.eggdeps.dot.print_dot(graph, cluster=options.cluster)
+        tl.eggdeps.dot.print_dot(
+            graph,
+            cluster=options.cluster,
+            print_version=options.print_version,
+            )
     else:
-        tl.eggdeps.plaintext.print_graph(graph)
+        tl.eggdeps.plaintext.print_graph(
+            graph,
+            print_version=options.print_version,
+            )
 
 
 def unmatcher(names, patterns):

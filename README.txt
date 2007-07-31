@@ -42,7 +42,9 @@ Options
                       regular expression for project names whose
                       dependencies to ignore
 
--n, --no-extras       always omit extra dependencies
+-x, --no-extras       always omit extra dependencies
+
+-n, --print-version   print version numbers of active distributions
 
 -d, --dot             produce a dot graph
 
