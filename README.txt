@@ -24,28 +24,30 @@ Python packages as defined by ``pkg_resources``.
   between all eggs in the working set and its roots will be those
   distributions that aren't dependencies of any other distributions.
 
-options:
-  -h, --help            show this help message and exit
+Options
+-------
 
-  -i IGNORE, --ignore=IGNORE
-                        project names to ignore
+-h, --help            show this help message and exit
 
-  -I RE_IGNORE, --re-ignore=RE_IGNORE
-                        regular expression for project names to ignore
+-i IGNORE, --ignore=IGNORE
+                      project names to ignore
 
-  -e DEAD_ENDS, --dead-end=DEAD_ENDS
-                        names of projects whose dependencies to ignore
+-I RE_IGNORE, --re-ignore=RE_IGNORE
+                      regular expression for project names to ignore
 
-  -E RE_DEAD_ENDS, --re-dead-end=RE_DEAD_ENDS
-                        regular expression for project names whose
-                        dependencies to ignore
+-e DEAD_ENDS, --dead-end=DEAD_ENDS
+                      names of projects whose dependencies to ignore
 
-  -n, --no-extras       always omit extra dependencies
+-E RE_DEAD_ENDS, --re-dead-end=RE_DEAD_ENDS
+                      regular expression for project names whose
+                      dependencies to ignore
 
-  -d, --dot             produce a dot graph
+-n, --no-extras       always omit extra dependencies
 
-  -c, --cluster         in a dot graph, cluster direct dependencies of each
-                        root distribution
+-d, --dot             produce a dot graph
+
+-c, --cluster         in a dot graph, cluster direct dependencies of each
+                      root distribution
 
 The ``-i``, ``-I``, ``-e``, and ``-E`` options may occur multiple times.
 
@@ -67,6 +69,26 @@ output, and their dependencies cannot be determined. The same happens if any
 distribution that is either specified on the command line or required by any
 other distribution is available in the working set, but at a version
 incompatible with the specified requirement.
+
+Graph building strategies
+-------------------------
+
+The dependency graph may be built following either of two strategies:
+
+:Analysing the whole working set:
+  Nodes correspond exactly to the distributions in the working set. Edges
+  corresponding to all conceivable dependencies between any active
+  distributions are included, but only if the required distribution is active
+  at the correct version. The roots of the graph correspond to those
+  distributions no other active distributions depend upon.
+
+:Starting from one or more eggs:
+  Nodes include all packages depended upon by the specified distributions and
+  extras, as well as their deep dependencies. They may cover only part of the
+  working set, as well as include nodes for distributions that are not active
+  at the required versions or not active at all (so their dependencies can not
+  be followed). The roots of the graph correspond to the specified
+  distributions.
 
 Reducing the graph
 ------------------

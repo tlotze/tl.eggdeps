@@ -5,6 +5,9 @@ Changes between versions
 0.2
 ===
 
+User visible:
+  - improved documentation
+
 Organisation:
   - fixed handling of tl namespace package
 
