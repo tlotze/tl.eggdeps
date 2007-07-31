@@ -40,20 +40,15 @@ def sort_specs(specs):
     return sorted(specs, cmp=lambda a, b: cmp(a.project_name, b.project_name))
 
 
-def setUp(test):
-    test.globs.update(dict(
-        make_dist=make_dist,
-        make_working_set=make_working_set,
-        sprint=sprint,
-        sort_specs=sort_specs,
-        ))
-
-
 def test_suite():
     return unittest.TestSuite([
         DocFileSuite(filename,
                      package="tl.eggdeps",
-                     setUp=setUp,
+                     globs=dict(make_dist=make_dist,
+                                make_working_set=make_working_set,
+                                sprint=sprint,
+                                sort_specs=sort_specs,
+                                ),
                      optionflags=doctest.NORMALIZE_WHITESPACE |
                                  doctest.ELLIPSIS,
                      )
