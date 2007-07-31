@@ -23,6 +23,8 @@ class Graph(dict):
         self.show_dist = lambda spec: show(spec.project_name)
 
     def from_specifications(self, *specifications):
+        """Build the dependency graph starting from one or more eggs.
+        """
         requirements = set(pkg_resources.parse_requirements(specifications))
         self.roots = self.names(requirements)
 
@@ -30,8 +32,14 @@ class Graph(dict):
             self.add_requirement(req)
 
     def add_requirement(self, req):
+        """Add nodes for a distribution and its dependencies.
+
+        This is the recursive part of building the graph from specifications.
+        If the distribution can not be found at the required version, a node
+        will still be added for it but its dependencies can not be determined.
+        """
         node = self.setdefault(req.project_name, Node(self, req))
-        if not (node.follow and node.dist):
+        if not (node.find(req) and node.follow):
             return
 
         if not node:
@@ -53,6 +61,8 @@ class Graph(dict):
             self.add_requirement(req)
 
     def from_working_set(self):
+        """Build the dependency graph for the whole working set.
+        """
         ws = filter(self.show_dist, self.working_set)
         ws_names = self.names(ws)
         self.roots = ws_names.copy()
@@ -62,37 +72,73 @@ class Graph(dict):
             if not node.follow:
                 continue
 
-            for dep in self.names(dist.requires()) & ws_names:
+            plain_names = self.names(filter(self.find, dist.requires()))
+            for dep in plain_names:
                 node[dep] = set()
 
-            plain_names = self.names(dist.requires())
             if self.extras:
                 for extra in dist.extras:
-                    for dep in (self.names(dist.requires((extra,)))
-                                & ws_names - plain_names):
+                    for dep in (
+                        self.names(filter(self.find, dist.requires((extra,))))
+                        - plain_names):
                         node.setdefault(dep, set()).add(extra)
 
             self.roots -= set(node)
 
-    def names(self, collection):
-        return set(filter(self.show, (x.project_name for x in collection)))
+    def names(self, specifications):
+        """Return a set of project names to be processed from an iterable of
+        either requirements or distributions.
+        """
+        return set(filter(self.show, (x.project_name for x in specifications)))
+
+    def find(self, requirement):
+        """Find a distribution in the working set associated with the graph.
+
+        This is a convenience method to handle the VersionConflict exception.
+        """
+        try:
+            return self.working_set.find(requirement)
+        except pkg_resources.VersionConflict:
+            return None
 
 
 class Node(dict):
     """A graph node representing and egg and its dependencies.
     """
 
-    def __init__(self, graph, spec):
-        self.name = spec.project_name
+    dist = None
+    compatible = True
+
+    def __init__(self, graph, specification):
+        self.name = specification.project_name
         self.graph = graph
         self.requires = set()
         self.follow = self.graph.follow(self.name)
+        self.find(specification)
 
-        # Find a distribution matching the spec in the working set. Search
-        # even if the spec is already a distribution to make sure it's active.
-        if isinstance(spec, pkg_resources.Distribution):
-            spec = spec.as_requirement()
-        try:
-            self.dist = self.graph.working_set.find(spec)
-        except pkg_resources.VersionConflict:
-            self.dist = None
+    def find(self, specification):
+        """Find a distribution matching the specification in the working set.
+
+        Returns whether a distribution for the requirements could be found.
+
+        Raises value error if the specification is for a different project.
+        """
+        # Is this for us?
+        if specification.project_name != self.name:
+            raise ValueError("A '%s' node cannot find a '%s' distribution." %
+                             (self.name, specification.project_name))
+
+        # Search even if the specification is already a distribution to make
+        # sure it's active.
+        if isinstance(specification, pkg_resources.Distribution):
+            specification = specification.as_requirement()
+        dist = self.graph.find(specification)
+
+        # Store the distribution if it is found - there can be only one under
+        # the same project name in the same working set.
+        self.dist = self.dist or dist
+
+        # Remember if at least one requirement could not be met.
+        found = bool(dist)
+        self.compatible &= found
+        return found

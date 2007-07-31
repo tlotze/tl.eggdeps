@@ -21,7 +21,7 @@ def print_dot(graph, cluster=False):
             fill("green")
         if not node.follow:
             fill("lightgrey")
-        if not node.dist:
+        if not node.compatible:
             fill("red")
 
         print node.name.replace(".", "_") + format_options(node_options)

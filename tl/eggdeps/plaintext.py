@@ -7,7 +7,7 @@ def print_subgraph(name, graph, mount_points, extras=None, path=()):
     root = graph[name]
 
     line = len(path) * "    "
-    if root.dist:
+    if root.compatible:
         line += name
     else:
         line += "(%s)" % name

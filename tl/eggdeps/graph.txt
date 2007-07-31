@@ -28,8 +28,11 @@ setup, we pass a working set of some mock distributions to the graph builder:
   [anton 1 (.../anton-1.egg), berta 2 (.../berta-2.egg)]
 
 
+Helper methods
+==============
+
 Extracting project names from specifications
-============================================
+--------------------------------------------
 
 Graphs have a method that extracts project names from an iterable of
 distributions or requirements and returns them as a set:
@@ -47,6 +50,102 @@ we have to specify something interesting to see an effect:
   >>> graph = Graph(ws, show=lambda name: name < "b")
   >>> graph.names(ws)
   set(['anton'])
+
+Finding distributions
+---------------------
+
+Working sets have a find method that returns a distribution matching a
+requirement if one can be found. It is wrapped by a convenience method of the
+Graph class that handles a special case.
+
+If we ask for distributions active at a compatible version or not active at
+all, both find methods behave the same:
+
+  >>> import pkg_resources
+
+  >>> req = pkg_resources.Requirement.parse("anton")
+  >>> ws.find(req)
+  anton 1 (.../anton-1.egg)
+  >>> graph.find(req)
+  anton 1 (.../anton-1.egg)
+
+  >>> req = pkg_resources.Requirement.parse("charlie")
+  >>> ws.find(req)
+  >>> graph.find(req)
+
+Unfortunately, the working set's find method raises an exception if a
+distribution for the same project is found, but at an incompatible version. As
+we treat distributions active at the wrong version the same as distributions
+not active at all, a convenience method handles the exception for us:
+
+  >>> req = pkg_resources.Requirement.parse("anton>5")
+  >>> ws.find(req)
+  Traceback (most recent call last):
+  ...
+  VersionConflict: (anton 1 (.../anton-1.egg), Requirement.parse('anton>5'))
+
+  >>> graph.find(req)
+
+
+Nodes
+=====
+
+The graph contains nodes which are instances of the Node class. They get bound
+to a graph upon instantiation and represent a distribution by its project
+name. The distribution is specified by an instance of either a Distribution or
+a Requirement:
+
+  >>> from tl.eggdeps.graph import Node
+  >>> node = Node(graph, anton_1)
+  >>> node.name
+  'anton'
+
+The node has a find method that tries to find a distribution matching a
+specification in the graph's working set. It returns a boolean indicating
+success or failure. If it succeeds, it stores the distribution. Another node
+attribute tells whether the distribution has been compatible to all
+specifications tried to match so far. The find method has already been called
+once upon instantiation of the node:
+
+  >>> node.dist
+  anton 1 (.../anton-1.egg)
+  >>> node.compatible
+  True
+
+When an attempt to match a specification by the node fails, the distribution
+remains stored, but the compatibility flag is unset:
+
+  >>> req_anton_5 = pkg_resources.Requirement.parse("anton>5")
+  >>> node.find(req_anton_5)
+  False
+  >>> node.dist
+  anton 1 (.../anton-1.egg)
+  >>> node.compatible
+  False
+
+On the other hand, if a distribution is not found upon instantiation, it may
+well be found by a later attempt at matching some specification:
+
+  >>> node = Node(graph, req_anton_5)
+  >>> print node.dist
+  None
+  >>> node.compatible
+  False
+
+  >>> node.find(anton_1)
+  True
+  >>> node.dist
+  anton 1 (.../anton-1.egg)
+  >>> node.compatible
+  False
+
+If a node is asked to find a distribution for another project than its own, it
+will complain:
+
+  >>> node.find(berta_2)
+  Traceback (most recent call last):
+  ...
+  ValueError: A 'anton' node cannot find a 'berta' distribution.
 
 
 Analysing the working set
@@ -93,9 +192,9 @@ plain direct dependency:
   >>> graph.roots
   set(['emil'])
 
-XXX Dependencies from a working set analysis do not yet take into account
-versions. The following should not report a dependency of berta on charlie as
-berta requires at least charlie 1.5:
+Dependencies from a working set analysis take into account versions. The
+following does not report a dependency of berta on charlie as berta requires
+at least charlie 1.5:
 
   >>> charlie_1_4 = make_dist("charlie-1.4.egg")
   >>> ws = make_working_set(berta_2, charlie_1_4)
@@ -103,7 +202,7 @@ berta requires at least charlie 1.5:
   >>> graph = Graph(ws)
   >>> graph.from_working_set()
   >>> sprint(graph)
-  {'berta': {'charlie': set([])},
+  {'berta': {},
    'charlie': {}}
 
 
@@ -150,7 +249,7 @@ is inactive it doesn't have one, in contrast to berta and charlie:
   charlie 1.6 (.../charlie-1.6.egg)
   >>> graph["dora"].dist
 
-If a version of charlie incompatible to the requirement by berta is active,
+If a version of charlie incompatible with the requirement by berta is active,
 charlie is treated as if it wasn't active at all:
 
   >>> ws = make_working_set(berta_2, charlie_1_4)
@@ -161,9 +260,6 @@ charlie is treated as if it wasn't active at all:
    'charlie': {}}
 
   >>> graph["charlie"].dist
-
-XXX This doesn't yet work reliably in the case of conflicting requirements
-where the first one found decides whether the active version is compatible.
 
 
 .. Local Variables:
