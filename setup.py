@@ -1,10 +1,9 @@
 #!/usr/bin/env python
-# -*- coding: latin-1 -*-
 #
 # Copyright (c) 2007 Thomas Lotze
 # See also LICENSE.txt
 
-"""Eggs grow on trees. Dependency trees.
+"""Compute a dependency graph between active Python eggs.
 """
 
 import os, os.path
@@ -48,6 +47,14 @@ tests_require = [
 
 classifiers = [
     "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: Zope Public License",
+    "Programming Language :: Python",
+    "Topic :: Software Development",
+    "Topic :: Software Development",
+    "Topic :: Utilities",
     ]
 
 setup(name="tl.eggdeps",
@@ -68,4 +75,5 @@ setup(name="tl.eggdeps",
       include_package_data=True,
       data_files=data_files,
       test_suite="tl.eggdeps.tests.test_suite",
+      namespace_packages=["tl"],
       )

@@ -1,0 +1,15 @@
+========================
+Changes between versions
+========================
+
+0.2
+===
+
+Organisation:
+  - fixed handling of tl namespace package
+
+
+0.1
+===
+
+initial release
