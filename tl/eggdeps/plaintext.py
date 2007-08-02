@@ -18,7 +18,7 @@ def print_subgraph(name, graph, mount_points, extras=None, path=(),
     else:
         line += "(%s)" % name_string
     if extras:
-        line += " [%s]" % ','.join(sorted(extras))
+        line += " [%s]" % ','.join(extras)
     if not print_tree and root:
         line += " ..."
     if not root.follow:
@@ -28,9 +28,8 @@ def print_subgraph(name, graph, mount_points, extras=None, path=(),
     if not print_tree:
         return
 
-    for dep, extras in sorted(
-        root.iteritems(),
-        cmp=lambda (a, b), (c, d): cmp(sorted(b), sorted(d)) or cmp(a, c)):
+    for extras, dep in sorted((sorted(extras), dep)
+                              for dep, extras in root.iteritems()):
         print_subgraph(dep, graph, mount_points, extras, path + (name,),
                        print_version=print_version)
 
