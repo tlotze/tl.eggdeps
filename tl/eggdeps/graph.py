@@ -89,7 +89,8 @@ class Graph(dict):
         """Return a set of project names to be processed from an iterable of
         either requirements or distributions.
         """
-        return set(filter(self.show, (x.project_name for x in specifications)))
+        return set(filter(self.show,
+                          (x.project_name for x in specifications)))
 
     def find(self, requirement):
         """Find a distribution in the working set associated with the graph.
@@ -103,7 +104,7 @@ class Graph(dict):
 
 
 class Node(dict):
-    """A graph node representing and egg and its dependencies.
+    """A graph node representing an egg and its dependencies.
     """
 
     dist = None
@@ -114,14 +115,16 @@ class Node(dict):
         self.graph = graph
         self.requires = set()
         self.follow = self.graph.follow(self.name)
+        self.deps = {}
         self.find(specification)
 
     def find(self, specification):
-        """Find a distribution matching the specification in the working set.
+        """Find a matching distribution in the working set.
 
-        Returns whether a distribution for the requirements could be found.
+        Returns whether a distribution compatible with the specification
+        (requirement or another distribution) could be found.
 
-        Raises value error if the specification is for a different project.
+        Raises ValueError if the specification is for a different project.
         """
         # Is this for us?
         if specification.project_name != self.name:
@@ -141,4 +144,5 @@ class Node(dict):
         # Remember if at least one requirement could not be met.
         found = bool(dist)
         self.compatible &= found
+
         return found
