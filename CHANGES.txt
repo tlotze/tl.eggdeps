@@ -5,6 +5,11 @@ Changes between versions
 0.2.1
 =====
 
+User visible:
+  - In plain text output, print the names of extras above their dependencies
+    instead of next to them, which happened to look as if they belonged to the
+    dependency specifications themselves.
+
 Bug fixes:
 
   - In plain text output, made sure that subtrees are printed at a path with

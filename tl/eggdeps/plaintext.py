@@ -2,8 +2,7 @@
 # See also LICENSE.txt
 
 
-def print_subgraph(graph, mount_points, path, extras=None,
-                   print_version=False):
+def print_subgraph(graph, mount_points, path, print_version=False):
     name = path[-1]
     print_tree = path == mount_points[name]
     root = graph[name]
@@ -18,8 +17,6 @@ def print_subgraph(graph, mount_points, path, extras=None,
         line += name_string
     else:
         line += "(%s)" % name_string
-    if extras:
-        line += " [%s]" % ','.join(extras)
     if not print_tree and root:
         line += " ..."
     if not root.follow:
@@ -29,9 +26,14 @@ def print_subgraph(graph, mount_points, path, extras=None,
     if not print_tree:
         return
 
+    last_extras = ()
     for extras, dep in sorted((sorted(extras), dep)
                               for dep, extras in root.iteritems()):
-        print_subgraph(graph, mount_points, path + (dep,), extras,
+        if extras and extras != last_extras:
+            print prefix + "  [%s]" % ','.join(extras)
+            last_extras = extras
+
+        print_subgraph(graph, mount_points, path + (dep,),
                        print_version=print_version)
 
 
