@@ -2,8 +2,9 @@
 # See also LICENSE.txt
 
 
-def print_subgraph(name, graph, mount_points, extras=None, path=(),
+def print_subgraph(graph, mount_points, path, extras=None,
                    print_version=False):
+    name = path[-1]
     print_tree = path == mount_points[name]
     root = graph[name]
 
@@ -12,7 +13,7 @@ def print_subgraph(name, graph, mount_points, extras=None, path=(),
     else:
         name_string = root.name
 
-    line = len(path) * "    "
+    line = prefix = (len(path) - 1) * "    "
     if root.compatible:
         line += name_string
     else:
@@ -30,41 +31,30 @@ def print_subgraph(name, graph, mount_points, extras=None, path=(),
 
     for extras, dep in sorted((sorted(extras), dep)
                               for dep, extras in root.iteritems()):
-        print_subgraph(dep, graph, mount_points, extras, path + (name,),
+        print_subgraph(graph, mount_points, path + (dep,), extras,
                        print_version=print_version)
 
 
-def find_mount_point(name, graph, mount_points, plain_mounts,
-                     path=(), is_plain=True):
-    # prefer paths without extra dependencies
-    if name in plain_mounts and not is_plain:
+def find_mount_point(graph, mount_points, extras_key, path, path_extras):
+    name = path[-1]
+    if (name in mount_points and
+        (extras_key[name], mount_points[name]) <= (path_extras, path)):
         return
 
-    mount_point = mount_points.get(name)
-    if mount_point is not None:
-        # prefer short paths
-        if len(path) > len(mount_point):
-            return
-        # prefer alphabetically first among paths of equal length
-        if len(path) == len(mount_point) and path > mount_point:
-            return
-
     mount_points[name] = path
-    if is_plain:
-        plain_mounts.add(name)
+    extras_key[name] = path_extras
 
-    path += (name,)
     for dep, extras in graph[name].iteritems():
-        find_mount_point(dep, graph, mount_points, plain_mounts,
-                         path, is_plain and not extras)
+        find_mount_point(graph, mount_points, extras_key,
+                         path + (dep,), path_extras + (sorted(extras),))
 
 
 def print_graph(graph, print_version=False):
     mount_points = {}
-    plain_mounts = set()
+    extras_key = {}
     for name in graph.roots:
-        find_mount_point(name, graph, mount_points, plain_mounts)
+        find_mount_point(graph, mount_points, extras_key, (name,), ((),))
 
     for name in sorted(graph.roots):
-        print_subgraph(name, graph, mount_points,
+        print_subgraph(graph, mount_points, (name,),
                        print_version=print_version)
