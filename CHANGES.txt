@@ -10,6 +10,8 @@ User visible:
     instead of next to them, which happened to look as if they belonged to the
     dependency specifications themselves.
 
+  - documented the meaning of annotations and colors in the output
+
 Bug fixes:
 
   - In plain text output, made sure that subtrees are printed at a path with

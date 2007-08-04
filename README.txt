@@ -57,6 +57,10 @@ The ``-i``, ``-I``, ``-e``, and ``-E`` options may occur multiple times.
 Documentation
 =============
 
+The goal of ``eggdeps`` is to compute a directed dependency graph with nodes
+that represent egg distributions from the working set, and edges which
+represent either mandatory or extra dependencies between the eggs.
+
 Working set
 -----------
 
@@ -92,6 +96,15 @@ The dependency graph may be built following either of two strategies:
   be followed). The roots of the graph correspond to the specified
   distributions.
 
+Some information will be lost while building the graph:
+
+- If a dependency occurs both mandatorily and by way of one or more extras, it
+  will be recorded as a plain mandatory dependency.
+
+- If a distribution A with installed extras is a dependency of multiple other
+  distributions, they will all appear to depend on A with all its required
+  extras, even if they individually require none or only a few of them.
+
 Reducing the graph
 ------------------
 
@@ -118,17 +131,95 @@ nodes and edges may be omitted.
 Output
 ------
 
-In all cases, the output of ``eggdeps`` is a directed dependency graph with
-nodes that represent egg distributions and edges which represent either direct
-or extra dependencies between them. Some information will be lost while
-building the graph:
+There are two ways ``eggdeps`` can output the computed dependency graph: plain
+text (the default) and a dot file to be fed to the graphviz tools.
 
-- If a dependency occurs both directly and by way of one or more extras, it
-  will be recorded as a plain direct dependency.
+Plain text output
+~~~~~~~~~~~~~~~~~
 
-- If a distribution A with installed extras is a dependency of multiple other
-  distributions, they will all appear to depend on A with all its extras, even
-  if they individually require none or only a few of them.
+The graph is printed to standard output essentially one node per line,
+indented according to nesting depth, and annotated where appropriate. The
+dependencies of each node are sorted after the following criteria:
+
+- Mandatory dependencies are printed before extra requirements.
+
+- Dependencies of each set of extras are grouped, the groups being sorted
+  alphabetically by the names of the extras.
+
+- Dependencies which are either all mandatory or by way of the same set of
+  extras are sorted alphabetically by name.
+
+As an illustrating example, the following dependency graph was computed for
+two Zope packages, one of them required with a "test" extra depending on an
+uninstalled egg, and some graph reduction applied::
+
+  zope.annotation
+      zope.app.container *
+      zope.component
+          zope.deferredimport
+              zope.proxy
+          zope.deprecation
+          zope.event
+  zope.dublincore
+      zope.annotation ...
+    [test]
+      (zope.app.testing) *
+
+:Brackets []:
+  If one or more dependencies of a node are due to extra requirements only,
+  the names of those extras are printed in square brackets above their
+  dependencies, half-indented relative to the node which requires them.
+
+:Ellipsis ...:
+  If a node with further dependencies occurs at several places in the graph,
+  the subgraph is printed only once, the other occurences being marked by an
+  ellipsis. The place where the subgraph is printed is chosen such that
+
+  * extra dependencies occur as late as possible in the path, if at all,
+
+  * shallow nesting is preferred,
+
+  * paths early in the alphabet are preferred.
+
+:Parentheses ():
+  If a distribution is not in the working set, its name is parenthesised.
+
+:Asterisk *:
+  Dead ends are marked by an asterisk.
+
+Dot file output
+~~~~~~~~~~~~~~~
+
+In a dot graphics, nodes and edges are not annotated with text but colored.
+
+These are the color codes for nodes, later ones overriding earlier ones in
+cases where more than one color is appropriate:
+
+:Green:
+  Nodes corresponding to the roots of the graph.
+
+:Yellow:
+  Direct dependencies of any root nodes, whether mandatory or through extras.
+
+:Lightgrey:
+  Dead ends.
+
+:Red:
+  Nodes for eggs installed at a version incompatible with some requirement, or
+  not installed at all.
+
+Edge colors:
+
+:Black:
+  Mandatory dependencies.
+
+:Lightgrey:
+  Extra dependencies.
+
+Other than being highlighted by color, root nodes and their direct
+dependencies may be clustered. ``eggdeps`` tries to put each root node in its
+own cluster. However, if two or more root nodes share any direct dependencies,
+they will share a cluster as well.
 
 
 Contact

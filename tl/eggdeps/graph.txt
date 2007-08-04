@@ -155,8 +155,8 @@ A dependency graph may be built from the complete working set by finding all
 possible dependencies between any distributions. The graph will be a mapping
 from project names to node objects which describe each node's dependencies.
 Node objects in turn are mappings from project names of each dependency to a
-set of dependency descriptions. The empty set signals a direct dependency, a
-set of names means that the dependency is by way of any of the named extras.
+set of dependency descriptions. The empty set signals a mandatory dependency,
+a set of names means that the dependency is by way of any of the named extras.
 Dependencies which are not active will be ignored.
 
   >>> dora_0_5 = make_dist("dora-0.5.egg")
@@ -175,9 +175,9 @@ are not a dependency of any other node:
   >>> graph.roots
   set(['anton'])
 
-If a distribution depends on another one both directly and by some extras
+If a distribution depends on another one both mandatorily and by some extras
 (which is possible though not very useful), the dependency is considered a
-plain direct dependency:
+plain mandatory dependency:
 
   >>> emil_1 = make_dist("emil-1.egg", """anton
   ...                                     [pointless-extra]
