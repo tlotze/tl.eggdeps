@@ -13,8 +13,7 @@ User visible:
 Bug fixes:
 
   - In plain text output, made sure that subtrees are printed at a path with
-    extra dependencies occuring as late as possible, if at all. Subtree
-    references should now always point back towards the top of the output.
+    extra dependencies occuring as late as possible, if at all.
 
 
 0.2

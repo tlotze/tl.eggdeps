@@ -39,23 +39,24 @@ def print_subgraph(graph, mount_points, path, print_version=False):
 
 def find_mount_point(graph, mount_points, best_keys, path, sort_key):
     name = path[-1]
-    if (name in mount_points and
-        (best_keys[name], mount_points[name]) <= (sort_key, path)):
+    if name in mount_points and best_keys[name] <= sort_key:
         return
 
     mount_points[name] = path
     best_keys[name] = sort_key
 
     for dep, extras in graph[name].iteritems():
-        find_mount_point(graph, mount_points, best_keys,
-                         path + (dep,), sort_key + (sorted(extras),))
+        find_mount_point(graph, mount_points, best_keys, path + (dep,),
+                         (sort_key[0] + (bool(extras),),
+                          sort_key[1] + (sorted(extras), name)))
 
 
 def print_graph(graph, print_version=False):
     mount_points = {}
     best_keys = {}
     for name in graph.roots:
-        find_mount_point(graph, mount_points, best_keys, (name,), ((),))
+        find_mount_point(graph, mount_points, best_keys, (name,),
+                         ((False,), ((), name)))
 
     for name in sorted(graph.roots):
         print_subgraph(graph, mount_points, (name,),
