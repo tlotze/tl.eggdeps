@@ -4,6 +4,7 @@ parts = eggdeps test
 
 [eggdeps]
 recipe = zc.recipe.egg
+interpreter = py
 eggs = tl.eggdeps
 
 [test]
