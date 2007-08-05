@@ -6,22 +6,12 @@
 """Compute a dependency graph between active Python eggs.
 """
 
-import os, os.path
+import os.path
 import glob
 from setuptools import setup, find_packages
 
 
 project_path = lambda *names: os.path.join(os.path.dirname(__file__), *names)
-
-
-def include_tree(dest, source):
-    source_len = len(source)
-    for dirpath, dirnames, filenames in os.walk(source):
-        yield (dest + dirpath[source_len:],
-               [os.path.join(dirpath, fn) for fn in filenames])
-        if ".svn" in dirnames:
-            dirnames.remove(".svn")
-
 
 longdesc = open(project_path("README.txt")).read()
 
