@@ -18,9 +18,11 @@ User visible:
     using the arguments option of the buildout egg recipe, for example
 
 Bug fixes:
-
   - In plain text output, made sure that subtrees are printed at a path with
     extra dependencies occuring as late as possible, if at all.
+
+Organisation:
+  - improved example buildout configuration
 
 
 0.2

@@ -16,3 +16,4 @@ eggs = tl.eggdeps
 [test]
 recipe = zc.recipe.testrunner
 eggs = tl.eggdeps [test]
+defaults = ["-v", "-s", "tl"]
