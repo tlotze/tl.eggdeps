@@ -7,6 +7,12 @@ recipe = zc.recipe.egg
 interpreter = py
 eggs = tl.eggdeps
 
+# The following example arguments turn on dot file output and printing of
+# version numbers, turn off extras, and make the setuptools egg be ignored:
+#
+# arguments = dot=True, print_version=True, extras=False,
+#             ignore=["setuptools"]
+
 [test]
 recipe = zc.recipe.testrunner
 eggs = tl.eggdeps [test]

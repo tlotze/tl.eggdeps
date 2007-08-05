@@ -12,6 +12,9 @@ User visible:
 
   - documented the meaning of annotations and colors in the output
 
+  - made the script entry point recognize option defaults which can be set
+    using the arguments option of the buildout egg recipe, for example
+
 Bug fixes:
 
   - In plain text output, made sure that subtrees are printed at a path with

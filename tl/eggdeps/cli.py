@@ -9,33 +9,40 @@ import tl.eggdeps.dot
 import tl.eggdeps.plaintext
 
 
-def eggdeps():
+def eggdeps(**options):
     parser = optparse.OptionParser("usage: %prog [options] [specifications]")
     parser.add_option("-i", "--ignore",
-                      dest="ignore", action="append", default=[],
+                      dest="ignore", action="append",
+                      default=options.get("ignore", []),
                       help="project names to ignore")
     parser.add_option("-I", "--re-ignore",
-                      dest="re_ignore", action="append", default=[],
+                      dest="re_ignore", action="append",
+                      default=options.get("re_ignore", []),
                       help="regular expression for project names to ignore")
     parser.add_option("-e", "--dead-end",
-                      dest="dead_ends", action="append", default=[],
+                      dest="dead_ends", action="append",
+                      default=options.get("dead_ends", []),
                       help="names of projects whose dependencies to ignore")
     parser.add_option("-E", "--re-dead-end",
-                      dest="re_dead_ends", action="append", default=[],
+                      dest="re_dead_ends", action="append",
+                      default=options.get("re_dead_ends", []),
                       help="regular expression for project names "
                            "whose dependencies to ignore")
     parser.add_option("-x", "--no-extras",
-                      dest="extras", action="store_false", default=True,
+                      dest="extras", action="store_false",
+                      default=options.get("extras", True),
                       help="always omit extra dependencies")
     parser.add_option("-n", "--print-version",
                       dest="print_version", action="store_true",
-                      default=False,
+                      default=options.get("print_version", False),
                       help="print version numbers of active distributions")
     parser.add_option("-d", "--dot",
-                      dest="dot", action="store_true", default=False,
+                      dest="dot", action="store_true",
+                      default=options.get("dot", False),
                       help="produce a dot graph")
     parser.add_option("-c", "--cluster",
-                      dest="cluster", action="store_true", default=False,
+                      dest="cluster", action="store_true",
+                      default=options.get("cluster", False),
                       help="in a dot graph, cluster direct dependencies "
                            "of each root distribution")
     options, specifications = parser.parse_args()

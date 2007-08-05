@@ -53,6 +53,12 @@ Options
 
 The ``-i``, ``-I``, ``-e``, and ``-E`` options may occur multiple times.
 
+The script entry point recognizes default values for all options, the variable
+names being the long option names with any dashes replaced by underscores
+(except for ``--no-extras``, which translates to setting ``extras=False``).
+This allows for setting defaults using the ``arguments`` option of the egg
+recipe in a buildout configuration, for example.
+
 
 Documentation
 =============
