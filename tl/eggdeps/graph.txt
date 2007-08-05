@@ -51,6 +51,29 @@ we have to specify something interesting to see an effect:
   >>> graph.names(ws)
   set(['anton'])
 
+Filtering distributions
+-----------------------
+
+The filter for distributions to be shown is stored on the graph instance:
+
+  >>> graph.show("anton")
+  True
+  >>> graph.show("berta")
+  False
+
+Another filter is created from it that works on Distribution and Requirement
+instances instead of names:
+
+  >>> graph.show_dist(anton_1)
+  True
+  >>> graph.show_dist(berta_2)
+  False
+
+  >>> graph.show_dist(anton_1.as_requirement())
+  True
+  >>> graph.show_dist(berta_2.as_requirement())
+  False
+
 Finding distributions
 ---------------------
 
@@ -159,6 +182,12 @@ set of dependency descriptions. The empty set signals a mandatory dependency,
 a set of names means that the dependency is by way of any of the named extras.
 Dependencies which are not active will be ignored.
 
+Operating on the full working set
+---------------------------------
+
+By default, all dependencies between any distributions in the working set will
+be reported, including mandatory as well as extra dependencies:
+
   >>> dora_0_5 = make_dist("dora-0.5.egg")
   >>> ws = make_working_set(anton_1, berta_2, dora_0_5)
 
@@ -205,13 +234,66 @@ at least charlie 1.5:
   {'berta': {},
    'charlie': {}}
 
+Reducing the graph
+------------------
+
+Extra dependencies may be ignored completely to simplify a complex graph:
+
+  >>> ws = make_working_set(anton_1, berta_2, dora_0_5)
+
+  >>> graph = Graph(ws, extras=False)
+  >>> graph.from_working_set()
+  >>> sprint(graph)
+  {'anton': {'berta': set([])},
+   'berta': {},
+   'dora': {}}
+  >>> sorted(graph.roots)
+  ['anton', 'dora']
+
+Alternatively, specific distributions may be ignored, which means that the
+graph will not contain any node for them and no edges for dependencies on them
+nor their own dependencies. This is achieved by specifying a filter function
+that determines which distributions ought to be shown:
+
+  >>> graph = Graph(ws, show=lambda name: name != "berta")
+  >>> graph.from_working_set()
+  >>> sprint(graph)
+  {'anton': {},
+   'dora': {}}
+  >>> sorted(graph.roots)
+  ['anton', 'dora']
+
+If certain distributions should themselves be included in the graph but their
+dependencies not be followed, they can be made "dead ends" by passing a filter
+function that determines which distributions to follow the dependencies of:
+
+  >>> graph = Graph(ws, follow=lambda name: name != "berta")
+  >>> graph.from_working_set()
+  >>> sprint(graph)
+  {'anton': {'berta': set([])},
+   'berta': {},
+   'dora': {}}
+  >>> sorted(graph.roots)
+  ['anton', 'dora']
+  >>> graph["anton"].follow
+  True
+  >>> graph["berta"].follow
+  False
+  >>> graph["dora"].follow
+  True
+
 
 Analysing specific distributions' dependencies
 ==============================================
 
 The second way of building a dependency graph is by inspecting the
 dependencies of one or more specified distributions. In this scenario,
-unrelated active distributions are ignored (which is anton in this example):
+unrelated active distributions are ignored.
+
+Operating on the full working set
+---------------------------------
+
+In this  example, anton does not depend on berta and berta's dependencies:
 
   >>> charlie_1_6 = make_dist("charlie-1.6.egg")
   >>> ws = make_working_set(anton_1, berta_2, charlie_1_6)
@@ -260,6 +342,80 @@ charlie is treated as if it wasn't active at all:
    'charlie': {}}
 
   >>> graph["charlie"].dist
+
+Reducing the graph
+------------------
+
+In contrast to analysing the whole working set, turning off extra dependencies
+will result in packages which are dependencies of the root nodes only by way
+of extras (anton in this example) be missing from the graph:
+
+  >>> ws = make_working_set(anton_1, berta_2, charlie_1_6)
+
+  >>> graph = Graph(ws, extras=False)
+  >>> graph.from_specifications("berta [extra]")
+  >>> sprint(graph)
+  {'berta': {'charlie': set([])},
+   'charlie': {}}
+  >>> graph.roots
+  set(['berta'])
+
+Ignoring specific distributions has different effects than in whole working
+set analysis as well. Whichever other distributions are connected to the roots
+only through a distribution which is to be ignored (charlie as a dependency of
+berta in this case), will be left out of the graph themselves:
+
+  >>> graph = Graph(ws, show=lambda name: name != "berta")
+  >>> graph.from_specifications("anton")
+  >>> sprint(graph)
+  {'anton': {}}
+  >>> graph.roots
+  set(['anton'])
+
+Similarly, distributions depended on by dead ends only (charlie again) will be
+missing from the graph:
+
+  >>> graph = Graph(ws, follow=lambda name: name != "berta")
+  >>> graph.from_specifications("anton")
+  >>> sprint(graph)
+  {'anton': {'berta': set([])},
+   'berta': {}}
+  >>> graph.roots
+  set(['anton'])
+  >>> graph["anton"].follow
+  True
+  >>> graph["berta"].follow
+  False
+
+But of course, distributions depended upon by ignored distributions and dead
+ends are not ignored, they may just be missed because of dependencies not
+being followed. If there are other paths from the roots to them, those
+distributions will be included in the graph, but with some connections
+missing:
+
+  >>> fritz_5 = make_dist("fritz-5.egg", depends="""berta
+  ...                                               charlie""")
+  >>> ws = make_working_set(berta_2, charlie_1_6, fritz_5)
+
+  >>> graph = Graph(ws, show=lambda name: name != "berta")
+  >>> graph.from_specifications("fritz")
+  >>> sprint(graph)
+  {'charlie': {},
+   'fritz': {'charlie': set([])}}
+
+  >>> graph = Graph(ws, follow=lambda name: name != "berta")
+  >>> graph.from_specifications("fritz")
+  >>> sprint(graph)
+  {'berta': {},
+   'charlie': {},
+   'fritz': {'berta': set([]),
+             'charlie': set([])}}
+  >>> graph["berta"].follow
+  False
+  >>> graph["charlie"].follow
+  True
+  >>> graph["fritz"].follow
+  True
 
 
 .. Local Variables:

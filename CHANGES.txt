@@ -24,6 +24,8 @@ Bug fixes:
 Organisation:
   - improved example buildout configuration
 
+  - added tests for graph reduction
+
 
 0.2
 ===
