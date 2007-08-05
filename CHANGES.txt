@@ -6,6 +6,8 @@ Changes between versions
 =====
 
 User visible:
+  - renamed the --print-version option to --version-numbers
+
   - In plain text output, print the names of extras above their dependencies
     instead of next to them, which happened to look as if they belonged to the
     dependency specifications themselves.

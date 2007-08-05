@@ -2,7 +2,7 @@
 # See also LICENSE.txt
 
 
-def print_dot(graph, cluster=False, print_version=False):
+def print_dot(graph, cluster=False, version_numbers=False):
     direct_deps = set()
     for name in graph.roots:
         direct_deps.update(graph[name])
@@ -11,7 +11,7 @@ def print_dot(graph, cluster=False, print_version=False):
 
     for node in graph.itervalues():
         node_options = {}
-        if print_version and node.dist:
+        if version_numbers and node.dist:
             node_options["label"] = "%s %s" % (node.name, node.dist.version)
         else:
             node_options["label"] = node.name

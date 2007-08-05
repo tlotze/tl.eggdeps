@@ -44,7 +44,7 @@ Options
 
 -x, --no-extras       always omit extra dependencies
 
--n, --print-version   print version numbers of active distributions
+-n, --version-numbers print version numbers of active distributions
 
 -d, --dot             produce a dot graph
 

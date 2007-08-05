@@ -32,9 +32,9 @@ def eggdeps(**options):
                       dest="extras", action="store_false",
                       default=options.get("extras", True),
                       help="always omit extra dependencies")
-    parser.add_option("-n", "--print-version",
-                      dest="print_version", action="store_true",
-                      default=options.get("print_version", False),
+    parser.add_option("-n", "--version-numbers",
+                      dest="version_numbers", action="store_true",
+                      default=options.get("version_numbers", False),
                       help="print version numbers of active distributions")
     parser.add_option("-d", "--dot",
                       dest="dot", action="store_true",
@@ -64,12 +64,12 @@ def eggdeps(**options):
         tl.eggdeps.dot.print_dot(
             graph,
             cluster=options.cluster,
-            print_version=options.print_version,
+            version_numbers=options.version_numbers,
             )
     else:
         tl.eggdeps.plaintext.print_graph(
             graph,
-            print_version=options.print_version,
+            version_numbers=options.version_numbers,
             )
 
 
