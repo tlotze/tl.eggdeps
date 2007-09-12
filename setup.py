@@ -27,13 +27,13 @@ install_requires = [
     "setuptools",
     ]
 
-extras_require = {
-    "test": ["zope.testing"],
-    }
-
 tests_require = [
     "zope.testing",
     ]
+
+extras_require = {
+    "test": tests_require,
+    }
 
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -42,7 +42,6 @@ classifiers = [
     "Intended Audience :: System Administrators",
     "License :: OSI Approved :: Zope Public License",
     "Programming Language :: Python",
-    "Topic :: Software Development",
     "Topic :: Software Development",
     "Topic :: Utilities",
     ]
