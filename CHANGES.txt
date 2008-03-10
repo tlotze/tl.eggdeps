@@ -2,6 +2,15 @@
 Changes between versions
 ========================
 
+0.2.2
+=====
+
+Bug fixes:
+  - In dot output, quote distribution names instead of escaping some
+    characters. Escaping only '.' was not sufficient - thanks to
+    Phillip J. Eby for the bug report.
+
+
 0.2.1
 =====
 

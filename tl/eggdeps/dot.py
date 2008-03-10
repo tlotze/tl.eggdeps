@@ -28,13 +28,13 @@ def print_dot(graph, cluster=False, version_numbers=False):
         if not node.compatible:
             fill("red")
 
-        print node.name.replace(".", "_") + format_options(node_options)
+        print '"%s"%s' % (node.name, format_options(node_options))
 
     if cluster:
         for i, cluster in enumerate(yield_clusters(graph)):
             print "subgraph cluster_%s {" % i
             for name in cluster:
-                print name.replace(".", "_")
+                print '"%s"' % name
             print "}"
 
     for node in graph.itervalues():
@@ -43,9 +43,8 @@ def print_dot(graph, cluster=False, version_numbers=False):
             if extras:
                 edge_options["color"] = "lightgrey"
 
-            print "%s -> %s%s" % (node.name.replace(".", "_"),
-                                  dep.replace(".", "_"),
-                                  format_options(edge_options))
+            print '"%s" -> "%s"%s' % (node.name,
+                                      dep, format_options(edge_options))
 
     print "}"
 
