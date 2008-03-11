@@ -61,16 +61,9 @@ def eggdeps(**options):
         graph.from_working_set()
 
     if options.dot:
-        tl.eggdeps.dot.print_dot(
-            graph,
-            cluster=options.cluster,
-            version_numbers=options.version_numbers,
-            )
+        tl.eggdeps.dot.print_dot(graph, options)
     else:
-        tl.eggdeps.plaintext.print_graph(
-            graph,
-            version_numbers=options.version_numbers,
-            )
+        tl.eggdeps.plaintext.print_graph(graph, options)
 
 
 def unmatcher(names, patterns):

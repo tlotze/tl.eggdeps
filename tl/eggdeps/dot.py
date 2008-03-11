@@ -2,7 +2,17 @@
 # See also LICENSE.txt
 
 
-def print_dot(graph, cluster=False, version_numbers=False):
+def print_dot(graph, options):
+    """Print a dependency graph to standard output as a dot input file.
+
+    graph: a tl.eggdeps.graph.Graph instance
+
+    options: an object that provides formatting options as attributes
+
+        cluster: bool, cluster direct dependencies of each root distribution?
+
+        version_numbers: bool, print version numbers of active distributions?
+    """
     direct_deps = set()
     for name in graph.roots:
         direct_deps.update(graph[name])
@@ -11,7 +21,7 @@ def print_dot(graph, cluster=False, version_numbers=False):
 
     for node in graph.itervalues():
         node_options = {}
-        if version_numbers and node.dist:
+        if options.version_numbers and node.dist:
             node_options["label"] = "%s %s" % (node.name, node.dist.version)
         else:
             node_options["label"] = node.name
@@ -30,7 +40,7 @@ def print_dot(graph, cluster=False, version_numbers=False):
 
         print '"%s"%s' % (node.name, format_options(node_options))
 
-    if cluster:
+    if options.cluster:
         for i, cluster in enumerate(yield_clusters(graph)):
             print "subgraph cluster_%s {" % i
             for name in cluster:
