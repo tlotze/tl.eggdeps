@@ -1,10 +1,14 @@
-# Copyright (c) 2007 Thomas Lotze
+# Copyright (c) 2007-2008 Thomas Lotze
 # See also LICENSE.txt
 
 
 def print_subgraph(graph, mount_points, path, options):
     name = path[-1]
     print_tree = path == mount_points[name]
+
+    if options.once and not print_tree:
+        return False
+
     node = graph[name]
 
     if options.version_numbers and node.dist:
@@ -17,23 +21,33 @@ def print_subgraph(graph, mount_points, path, options):
         line += name_string
     else:
         line += "(%s)" % name_string
-    if not print_tree and node:
+    if not options.terse and not print_tree and node:
         line += " ..."
     if not node.follow:
         line += " *"
     print line
 
     if not print_tree:
-        return
+        return False
 
     last_extras = []
+    printed_all = True
     for extras, dep in sorted((sorted(extras), dep)
                               for dep, extras in node.iteritems()):
+        # XXX If options.terse, extras whose dependencies will not be printed
+        # should not be printed themselves. This requires rewriting most of
+        # this module to calculate all output before printing anything.
         if extras != last_extras:
             print prefix + "  [%s]" % ','.join(extras)
             last_extras = extras
 
-        print_subgraph(graph, mount_points, path + (dep,), options)
+        printed_all = printed_all and print_subgraph(
+            graph, mount_points, path + (dep,), options)
+
+    if options.once and not options.terse and not printed_all:
+        print prefix + "    ..."
+
+    return True
 
 
 def find_mount_point(graph, mount_points, best_keys, path, sort_key):

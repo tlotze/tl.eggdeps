@@ -1,4 +1,4 @@
-# Copyright (c) 2007 Thomas Lotze
+# Copyright (c) 2007-2008 Thomas Lotze
 # See also LICENSE.txt
 
 import re
@@ -36,6 +36,16 @@ def eggdeps(**options):
                       dest="version_numbers", action="store_true",
                       default=options.get("version_numbers", False),
                       help="print version numbers of active distributions")
+    parser.add_option("-1", "--once",
+                      dest="once", action="store_true",
+                      default=options.get("once", False),
+                      help="in plain text output, include each distribution "
+                           "only once")
+    parser.add_option("-t", "--terse",
+                      dest="terse", action="store_true",
+                      default=options.get("terse", False),
+                      help="in plain text output, omit any hints at "
+                            "unprinted distributions, such as ellipses")
     parser.add_option("-d", "--dot",
                       dest="dot", action="store_true",
                       default=options.get("dot", False),
