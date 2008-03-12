@@ -2,6 +2,17 @@
 Changes between versions
 ========================
 
+0.3
+===
+
+Features:
+  - added an option --once (-1) for printing each distribution only once in
+    plain text output
+
+  - added an option --terse (-t) for suppressing hints at subtrees that are
+    not printed in order to avoid duplication in plain text output
+
+
 0.2.2
 =====
 
