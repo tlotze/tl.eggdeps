@@ -1,6 +1,7 @@
-# Copyright (c) 2007 Thomas Lotze
+# Copyright (c) 2007-2008 Thomas Lotze
 # See also LICENSE.txt
 
+import os.path
 import unittest
 import doctest
 from zope.testing.doctest import DocFileSuite
@@ -52,10 +53,6 @@ def test_suite():
                      optionflags=doctest.NORMALIZE_WHITESPACE |
                                  doctest.ELLIPSIS,
                      )
-        for filename in (
-        "graph.txt",
-        )])
-
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
+        for filename in sorted(os.listdir(os.path.dirname(__file__)))
+        if filename.endswith(".txt")
+        ])

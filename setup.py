@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (c) 2007 Thomas Lotze
+# Copyright (c) 2007-2008 Thomas Lotze
 # See also LICENSE.txt
 
 """Compute a dependency graph between active Python eggs.
@@ -65,4 +65,5 @@ setup(name="tl.eggdeps",
       data_files=data_files,
       test_suite="tl.eggdeps.tests.test_suite",
       namespace_packages=["tl"],
+      zip_safe=False,
       )
