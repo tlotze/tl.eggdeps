@@ -6,6 +6,7 @@ import optparse
 
 import tl.eggdeps.graph
 import tl.eggdeps.dot
+import tl.eggdeps.requirements
 import tl.eggdeps.plaintext
 
 
@@ -47,14 +48,19 @@ def eggdeps(**options):
                       help="in plain text output, omit any hints at "
                             "unprinted distributions, such as ellipses")
     parser.add_option("-d", "--dot",
-                      dest="dot", action="store_true",
-                      default=options.get("dot", False),
+                      dest="format", action="store_const",
+                      const="dot",
+                      default=options.get("format", "plaintext"),
                       help="produce a dot graph")
     parser.add_option("-c", "--cluster",
                       dest="cluster", action="store_true",
                       default=options.get("cluster", False),
                       help="in a dot graph, cluster direct dependencies "
                            "of each root distribution")
+    parser.add_option("-r", "--requirements",
+                      dest="format",  action="store_const",
+                      const="requirements",
+                      help="produce a requirements list")
     options, specifications = parser.parse_args()
 
     show = unmatcher(options.ignore, options.re_ignore)
@@ -70,10 +76,12 @@ def eggdeps(**options):
     else:
         graph.from_working_set()
 
-    if options.dot:
-        tl.eggdeps.dot.print_dot(graph, options)
-    else:
-        tl.eggdeps.plaintext.print_graph(graph, options)
+    formatter = {
+        "plaintext": tl.eggdeps.plaintext.print_graph,
+        "dot": tl.eggdeps.dot.print_dot,
+        "requirements": tl.eggdeps.requirements.print_list,
+        }[options.format]
+    formatter(graph, options)
 
 
 def unmatcher(names, patterns):

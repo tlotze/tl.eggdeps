@@ -41,6 +41,13 @@ def sort_specs(specs):
     return sorted(specs, cmp=lambda a, b: cmp(a.project_name, b.project_name))
 
 
+class Options(dict):
+
+    def __init__(self, *args, **kwargs):
+        self.__dict__ = self
+        super(Options, self).__init__(*args, **kwargs)
+
+
 def test_suite():
     return unittest.TestSuite([
         DocFileSuite(filename,
@@ -49,6 +56,7 @@ def test_suite():
                                 make_working_set=make_working_set,
                                 sprint=sprint,
                                 sort_specs=sort_specs,
+                                Options=Options,
                                 ),
                      optionflags=doctest.NORMALIZE_WHITESPACE |
                                  doctest.ELLIPSIS,
