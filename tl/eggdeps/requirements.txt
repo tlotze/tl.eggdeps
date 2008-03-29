@@ -7,7 +7,9 @@ First, let's set up some stuff we're going to need:
   >>> from tl.eggdeps.requirements import print_list
 
   >>> def req_options(**kwargs):
-  ...     return Options(format="requirements", **kwargs)
+  ...     options = dict(version_numbers=False)
+  ...     options.update(kwargs)
+  ...     return Options(**options)
 
 Now we populate a custom working set and compute its dependency graph,
 arranging for one distribution to appear more than once in the graph:
@@ -30,7 +32,7 @@ arranging for one distribution to appear more than once in the graph:
 Unversioned requirements
 ========================
 
-  >>> print_list(graph, req_options(version_numbers=False))
+  >>> print_list(graph, req_options())
   ['anton', 'berta', 'charlie']
 
 

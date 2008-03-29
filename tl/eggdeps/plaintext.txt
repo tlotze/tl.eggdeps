@@ -1,0 +1,117 @@
+======================================
+Printing a plain text dependency graph
+======================================
+
+First, let's set up some stuff we're going to need:
+
+  >>> from tl.eggdeps.plaintext import print_graph
+
+  >>> def pt_options(**kwargs):
+  ...     options = dict(version_numbers=False,
+  ...                    once=False,
+  ...                    terse=False)
+  ...     options.update(kwargs)
+  ...     return Options(**options)
+
+Now we populate a custom working set and compute its dependency graph,
+arranging for one subtree to appear more than once in the graph:
+
+  >>> anton_1 = make_dist("anton-1.egg", depends="""berta
+  ...                                               charlie[extra]""")
+  >>> berta_2 = make_dist("berta-2.egg", depends="charlie")
+  >>> charlie_1_4 = make_dist("charlie-1.4.egg", depends="""[extra]
+  ...                                                       dora""")
+  >>> dora_0_5 = make_dist("dora-0.5.egg")
+  >>> ws = make_working_set(anton_1, berta_2, charlie_1_4, dora_0_5)
+
+  >>> from tl.eggdeps.graph import Graph
+  >>> graph = Graph(working_set=ws)
+  >>> graph.from_working_set()
+  >>> sprint(graph)
+  {'anton': {'berta': set([]), 'charlie': set([])},
+   'berta': {'charlie': set([])},
+   'charlie': {'dora': set(['extra'])},
+   'dora': {}}
+
+
+Full trees
+==========
+
+Full trees are still somewhat abbreviated representations of the complete
+dependency structure but include enough information to reconstruct the latter:
+they spell out recurring subtrees only the first time they occur but print the
+subtree root distributions in all other places and add ellipses to hint at
+omissions.
+
+  >>> print_graph(graph, pt_options())
+    anton
+        berta
+            charlie ...
+        charlie
+          [extra]
+            dora
+
+Version numbers may be printed next to the distribution names. Since this is
+completely independent of all other options, we may as well demonstrate it
+here:
+
+  >>> print_graph(graph, pt_options(version_numbers=True))
+    anton 1
+        berta 2
+            charlie 1.4 ...
+        charlie 1.4
+          [extra]
+            dora 0.5
+
+
+Printing each distribution only once
+====================================
+
+In order to shorten the representation, repeated occurrences of distributions
+may be suppressed so that each distribution is printed only once. This
+suppresses root distributions of omitted subtrees. Hints at omissions are
+still printed so even though the information printed is no longer enough to
+reconstruct the full tree from the output, one at least knows where something
+is missing.
+
+  >>> print_graph(graph, pt_options(once=True))
+  anton
+      berta
+          ...
+      charlie
+        [extra]
+          dora
+
+
+Terse output
+============
+
+Terse output omits hints at left-out subtrees, such as ellipses:
+
+  >>> print_graph(graph, pt_options(terse=True))
+  anton
+      berta
+          charlie
+      charlie
+        [extra]
+          dora
+
+
+Xmas tree configuration
+=======================
+
+Finally, we switch on all options at once:
+
+  >>> print_graph(graph, pt_options(once=True,
+  ...                               terse=True,
+  ...                               version_numbers=True))
+  anton 1
+      berta 2
+      charlie 1.4
+        [extra]
+          dora 0.5
+
+
+.. Local Variables:
+.. mode: rst
+.. End:
