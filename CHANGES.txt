@@ -12,6 +12,12 @@ Features:
   - added an option --terse (-t) for suppressing hints at subtrees that are
     not printed in order to avoid duplication in plain text output
 
+  - added an option --requirements (-r) for printing a list of requirement
+    specifications from the dependency graph
+
+Organisation:
+  - added tests for output modules
+
 
 0.2.2
 =====
