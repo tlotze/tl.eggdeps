@@ -46,12 +46,22 @@ Options
 
 -n, --version-numbers print version numbers of active distributions
 
+-1, --once            in plain text output, include each distribution only
+                      once
+
+-t, --terse           in plain text output, omit any hints at unprinted
+                      distributions, such as ellipses
+
 -d, --dot             produce a dot graph
 
 -c, --cluster         in a dot graph, cluster direct dependencies of each
                       root distribution
 
+-r, --requirements    produce a requirements list
+
 The ``-i``, ``-I``, ``-e``, and ``-E`` options may occur multiple times.
+
+If both the ``-d`` and ``-r`` options are given, the one listed last wins.
 
 The script entry point recognizes default values for all options, the variable
 names being the long option names with any dashes replaced by underscores
@@ -226,6 +236,14 @@ Other than being highlighted by color, root nodes and their direct
 dependencies may be clustered. ``eggdeps`` tries to put each root node in its
 own cluster. However, if two or more root nodes share any direct dependencies,
 they will share a cluster as well.
+
+Requirements list
+~~~~~~~~~~~~~~~~~
+
+All the distributions included in the graph may be output as the Python
+representation of a list of requirement specifications, either listing bare
+package names or including the exact versions as they occur in the working
+set. The list is sorted alphabetically by distribution name.
 
 
 Contact
