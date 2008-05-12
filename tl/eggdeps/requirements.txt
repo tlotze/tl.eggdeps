@@ -7,16 +7,16 @@ First, let's set up some stuff we're going to need:
   >>> from tl.eggdeps.requirements import print_list
 
   >>> def req_options(**kwargs):
-  ...     options = dict(version_numbers=False)
+  ...     options = dict(version_numbers=False, version_specs=False)
   ...     options.update(kwargs)
   ...     return Options(**options)
 
 Now we populate a custom working set and compute its dependency graph,
 arranging for one distribution to appear more than once in the graph:
 
-  >>> anton_1 = make_dist("anton-1.egg", depends="""berta
-  ...                                               charlie""")
-  >>> berta_2 = make_dist("berta-2.egg", depends="charlie")
+  >>> anton_1 = make_dist("anton-1.egg", depends="""berta <3
+  ...                                               charlie >=1.1, !=1.7""")
+  >>> berta_2 = make_dist("berta-2.egg", depends="charlie <2")
   >>> charlie_1_4 = make_dist("charlie-1.4.egg")
   >>> ws = make_working_set(anton_1, berta_2, charlie_1_4)
 
@@ -41,6 +41,13 @@ Versioned requirements
 
   >>> print_list(graph, req_options(version_numbers=True))
   ['anton==1', 'berta==2', 'charlie==1.4']
+
+
+Requirements with version specifications
+========================================
+
+  >>> print_list(graph, req_options(version_specs=True))
+  ['anton>=1', 'berta>=2,<3', 'charlie>=1.4,!=1.7,<2']
 
 
 .. Local Variables:

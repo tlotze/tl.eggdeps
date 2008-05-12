@@ -61,6 +61,11 @@ def eggdeps(**options):
                       dest="format",  action="store_const",
                       const="requirements",
                       help="produce a requirements list")
+    parser.add_option("-s", "--version-specs",
+                      dest="version_specs", action="store_true",
+                      default=options.get("version_specs", False),
+                      help="in a requirements list, print loosest possible "
+                           "version specifications")
     options, specifications = parser.parse_args()
 
     show = unmatcher(options.ignore, options.re_ignore)
