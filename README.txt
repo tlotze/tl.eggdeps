@@ -59,9 +59,13 @@ Options
 
 -r, --requirements    produce a requirements list
 
+-s, --version-specs   in a requirements list, print loosest possible version
+                      specifications
+
 The ``-i``, ``-I``, ``-e``, and ``-E`` options may occur multiple times.
 
 If both the ``-d`` and ``-r`` options are given, the one listed last wins.
+When printing requirements lists, ``-v`` wins over ``-s``.
 
 The script entry point recognizes default values for all options, the variable
 names being the long option names with any dashes replaced by underscores
@@ -241,9 +245,20 @@ Requirements list
 ~~~~~~~~~~~~~~~~~
 
 All the distributions included in the graph may be output as the Python
-representation of a list of requirement specifications, either listing bare
-package names or including the exact versions as they occur in the working
-set. The list is sorted alphabetically by distribution name.
+representation of a list of requirement specifications, either
+
+- listing bare package names,
+
+- including the exact versions as they occur in the working set, or
+
+- specifying complex version requirements that take into account all version
+  requirements made for the distribution in question (but disregard extras
+  completely for the time being). Complex version requirements always require
+  at least the version that occurs in the working set, assuming that we cannot
+  know the version requirements of past versions but reasonably assume that
+  requirements might stay the same for future versions.
+
+The list is sorted alphabetically by distribution name.
 
 
 Contact

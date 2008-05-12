@@ -2,6 +2,15 @@
 Changes between versions
 ========================
 
+0.3.1
+=====
+
+Features:
+  - Added an option --version-specs (-s) for printing complex version
+    specifications in a requirements list. They take into account the
+    intersection of all version requirements for a particular distribution,
+    but disregard extras completely for the time being.
+
 0.3
 ===
 
