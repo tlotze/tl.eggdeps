@@ -261,6 +261,13 @@ representation of a list of requirement specifications, either
 The list is sorted alphabetically by distribution name.
 
 
+Change log
+==========
+
+For a continuously updated change log, see
+<https://svn.thomas-lotze.de/repos/public/tl.eggdeps/trunk/CHANGES.txt>.
+
+
 Contact
 =======
 
@@ -268,3 +275,8 @@ This package is written by Thomas Lotze. Please contact the author at
 <thomas@thomas-lotze.de> to provide feedback, suggestions, or contributions.
 
 See also <http://www.thomas-lotze.de/en/software/eggdeps/>.
+
+
+.. Local Variables:
+.. mode: rst
+.. End:

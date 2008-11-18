@@ -1,9 +1,13 @@
-========================
-Changes between versions
-========================
+=========================
+Change log for tl.eggdeps
+=========================
 
-0.3.1
-=====
+0.4 (unreleased)
+================
+
+
+0.3.1 (2008-05-12)
+==================
 
 Features:
   - Added an option --version-specs (-s) for printing complex version
@@ -11,8 +15,8 @@ Features:
     intersection of all version requirements for a particular distribution,
     but disregard extras completely for the time being.
 
-0.3
-===
+0.3 (2008-03-29)
+================
 
 Features:
   - added an option --once (-1) for printing each distribution only once in
@@ -28,8 +32,8 @@ Organisation:
   - added tests for output modules
 
 
-0.2.2
-=====
+0.2.2 (2008-03-10)
+==================
 
 Bug fixes:
   - In dot output, quote distribution names instead of escaping some
@@ -37,8 +41,8 @@ Bug fixes:
     Phillip J. Eby for the bug report.
 
 
-0.2.1
-=====
+0.2.1 (2007-08-06)
+==================
 
 User visible:
   - renamed the --print-version option to --version-numbers
@@ -62,8 +66,8 @@ Organisation:
   - added tests for graph reduction
 
 
-0.2
-===
+0.2 (2007-07-31)
+================
 
 User visible:
   - improved documentation
@@ -80,7 +84,12 @@ Organisation:
   - fixed handling of tl namespace package
 
 
-0.1
-===
+0.1 (2007-07-30)
+================
 
 initial release
+
+
+.. Local Variables:
+.. mode: rst
+.. End:
