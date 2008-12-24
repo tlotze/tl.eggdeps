@@ -1,10 +1,9 @@
 # Copyright (c) 2007 Thomas Lotze
 # See also LICENSE.txt
 
-import sys
 import pkg_resources
 
-
+
 class Graph(dict):
     """A graph of egg dependencies.
     """
