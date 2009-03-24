@@ -1,9 +1,9 @@
-# Copyright (c) 2007-2008 Thomas Lotze
+# Copyright (c) 2007-2009 Thomas Lotze
 # See also LICENSE.txt
 
 import os.path
 import unittest
-import doctest
+from zope.testing import doctest
 from zope.testing.doctest import DocTestSuite, DocFileSuite
 
 import pkg_resources
@@ -63,7 +63,8 @@ def test_suite():
                                 Options=Options,
                                 ),
                      optionflags=doctest.NORMALIZE_WHITESPACE |
-                                 doctest.ELLIPSIS,
+                                 doctest.ELLIPSIS |
+                                 doctest.REPORT_NDIFF,
                      )
         for filename in sorted(os.listdir(os.path.dirname(__file__)))
         if filename.endswith(".txt")
