@@ -112,6 +112,74 @@ anton 1
         dora 0.5
 
 
+Determining which occurrence of a subtree to render
+===================================================
+
+If a subgraph of the dependency structure occurs multiple times, a
+deterministic algorithm is employed to decide at which point in the printed
+tree the subgraph is to be rendered.
+
+A subgraph will be rendered as close to the root as possible in order to avoid
+printing a deep tree:
+
+>>> anton = make_dist("anton-1.egg", depends="""berta
+...                                             charlie""")
+>>> berta = make_dist("berta-2.egg", depends="charlie")
+>>> charlie = make_dist("charlie-1.4.egg", depends="dora")
+>>> dora = make_dist("dora-0.5.egg")
+>>> ws = make_working_set(anton, berta, charlie, dora)
+>>> graph = Graph(working_set=ws)
+>>> graph.from_specifications("anton")
+>>> print_graph(graph, pt_options())
+anton
+    berta
+        charlie ...
+    charlie
+        dora
+
+If a subgraph can be reached from a root node both by a route consisting only
+of mandatory dependency edges and by a route including extra dependencies, the
+subgraph will be rendered at the point reached without considering extras:
+
+>>> anton = make_dist("anton-1.egg", depends="""berta
+...                                             [extra]
+...                                             charlie""")
+>>> ws = make_working_set(anton, berta, charlie, dora)
+>>> graph = Graph(working_set=ws)
+>>> graph.from_specifications("anton[extra]")
+>>> print_graph(graph, pt_options())
+anton
+    berta
+        charlie
+            dora
+  [extra]
+    charlie ...
+
+However, if a distribution is required more than once with different sets of
+extras, the dependencies of all extras involved will be rendered at the same
+occurrence of that distribution:
+
+>>> anton = make_dist("anton-1.egg", depends="""berta
+...                                             charlie""")
+>>> berta = make_dist("berta-2.egg", depends="charlie[foo]")
+>>> charlie = make_dist("charlie-1.4.egg", depends="""dora
+...                                                   [foo]
+...                                                   emil""")
+>>> dora = make_dist("dora-0.5.egg")
+>>> emil = make_dist("emil-1.egg")
+>>> ws = make_working_set(anton, berta, charlie, dora, emil)
+>>> graph = Graph(working_set=ws)
+>>> graph.from_specifications("anton")
+>>> print_graph(graph, pt_options())
+anton
+    berta
+        charlie ...
+    charlie
+        dora
+      [foo]
+        emil
+
+
 .. Local Variables:
 .. mode: rst
 .. End:
