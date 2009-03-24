@@ -125,18 +125,18 @@ a Requirement:
 
 The node has a find method that tries to find a distribution matching a
 specification in the graph's working set. It returns a boolean indicating
-success or failure. If it succeeds, it stores the distribution. Another node
-attribute tells whether the distribution has been compatible to all
-specifications tried to match so far. The find method has already been called
-once upon instantiation of the node:
+success or failure. If it succeeds, it stores the distribution in an attribute
+of the node. Another attribute keeps record of whether the distribution has
+been compatible to all specifications tried to match so far. The find method
+has already been called once when the node was instantiated:
 
 >>> node.dist
 anton 1 (.../anton-1.egg)
 >>> node.compatible
 True
 
-When an attempt to match a specification by the node fails, the distribution
-remains stored, but the compatibility flag is unset:
+When an attempt to match a specification to the node fails, the distribution
+remains associated with the node, but the node's compatibility flag is unset:
 
 >>> req_anton_5 = pkg_resources.Requirement.parse("anton>5")
 >>> node.find(req_anton_5)
@@ -221,7 +221,7 @@ plain mandatory dependency:
 >>> graph.roots
 set(['emil'])
 
-Dependencies from a working set analysis take into account versions. The
+Dependencies from a working set analysis take versions into account. The
 following does not report a dependency of berta on charlie as berta requires
 at least charlie 1.5:
 
@@ -250,10 +250,10 @@ Extra dependencies may be ignored completely to simplify a complex graph:
 >>> sorted(graph.roots)
 ['anton', 'dora']
 
-Alternatively, specific distributions may be ignored, which means that the
-graph will not contain any node for them and no edges for dependencies on them
-nor their own dependencies. This is achieved by specifying a filter function
-that determines which distributions ought to be shown:
+Alternatively, specific distributions may be ignored. The graph will then not
+contain any node for those distributions, nor any edges for dependencies on
+them or their own dependencies. This is achieved by specifying a filter
+function that determines which distributions ought to be shown:
 
 >>> graph = Graph(ws, show=lambda name: name != "berta")
 >>> graph.from_working_set()
@@ -347,8 +347,8 @@ Reducing the graph
 ------------------
 
 In contrast to analysing the whole working set, turning off extra dependencies
-will result in packages which are dependencies of the root nodes only by way
-of extras (anton in this example) be missing from the graph:
+will remove those packages from the graph which are dependencies of the root
+nodes only by way of extras. In our example, this applies to anton:
 
 >>> ws = make_working_set(anton_1, berta_2, charlie_1_6)
 
