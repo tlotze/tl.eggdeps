@@ -44,24 +44,24 @@ subtree root distributions in all other places and add ellipses to hint at
 omissions.
 
 >>> print_graph(graph, pt_options())
-  anton
-      berta
-          charlie ...
-      charlie
-        [extra]
-          dora
+anton
+    berta
+        charlie ...
+    charlie
+      [extra]
+        dora
 
 Version numbers may be printed next to the distribution names. Since this is
 completely independent of all other options, we may as well demonstrate it
 here:
 
 >>> print_graph(graph, pt_options(version_numbers=True))
-  anton 1
-      berta 2
-          charlie 1.4 ...
-      charlie 1.4
-        [extra]
-          dora 0.5
+anton 1
+    berta 2
+        charlie 1.4 ...
+    charlie 1.4
+      [extra]
+        dora 0.5
 
 
 Printing each distribution only once
