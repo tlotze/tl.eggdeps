@@ -137,6 +137,16 @@ anton
     charlie
         dora
 
+In particular, this prevents infinite recursion with cyclic dependency graphs:
+
+>>> anton = make_dist("anton-1.egg", depends="anton")
+>>> ws = make_working_set(anton)
+>>> graph = Graph(working_set=ws)
+>>> graph.from_specifications("anton")
+>>> print_graph(graph, pt_options())
+anton
+    anton ...
+
 If a subgraph can be reached from a root node both by a route consisting only
 of mandatory dependency edges and by a route including extra dependencies, the
 subgraph will be rendered at the point reached without considering extras:
