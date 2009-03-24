@@ -1,8 +1,9 @@
-# Copyright (c) 2007-2008 Thomas Lotze
+# Copyright (c) 2007-2009 Thomas Lotze
 # See also LICENSE.txt
 
-import re
 import optparse
+import re
+import sys
 
 import tl.eggdeps.graph
 import tl.eggdeps.dot
@@ -80,6 +81,8 @@ def eggdeps(**options):
         graph.from_specifications(*specifications)
     else:
         graph.from_working_set()
+
+    options.comment = 'arguments: ' + ' '.join(sys.argv[1:])
 
     formatter = {
         "plaintext": tl.eggdeps.plaintext.print_graph,

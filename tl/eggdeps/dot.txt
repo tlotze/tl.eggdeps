@@ -73,6 +73,18 @@ subgraph cluster_0 {
 }
 
 
+Including a comment in the dot file
+===================================
+
+>>> options = dot_options()
+>>> options.comment = u"called by a doc test\nand has two lines"
+>>> print_dot(graph, options)
+// called by a doc test
+// and has two lines
+digraph {
+...
+
+
 .. Local Variables:
 .. mode: rst
 .. End:

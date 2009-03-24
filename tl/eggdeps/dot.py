@@ -1,4 +1,4 @@
-# Copyright (c) 2007-2008 Thomas Lotze
+# Copyright (c) 2007-2009 Thomas Lotze
 # See also LICENSE.txt
 
 
@@ -12,7 +12,13 @@ def print_dot(graph, options):
         cluster: bool, cluster direct dependencies of each root distribution?
 
         version_numbers: bool, print version numbers of active distributions?
+
+        comment: str, optional, will be included at the top of the dot file
     """
+    if hasattr(options, 'comment'):
+        for line in options.comment.splitlines():
+            print '// ' + line
+
     direct_deps = set()
     for name in graph.roots:
         direct_deps.update(graph[name])
