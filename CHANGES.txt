@@ -10,6 +10,10 @@ Features:
     record the arguments eggdeps was called with. Thanks to Christian
     Zagrodnick for the suggestion.
 
+Bug fixes:
+  - Omission of a subtree in the plaintext output would cause all following
+    siblings of the mount point to be skipped.
+
 
 0.3.1 (2008-05-12)
 ==================

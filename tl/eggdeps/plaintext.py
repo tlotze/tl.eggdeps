@@ -41,8 +41,9 @@ def print_subgraph(graph, mount_points, path, options):
             print prefix + "  [%s]" % ','.join(extras)
             last_extras = extras
 
-        printed_all = printed_all and print_subgraph(
-            graph, mount_points, path + (dep,), options)
+        printed_all = (print_subgraph(graph, mount_points,
+                                      path + (dep,), options)
+                       and printed_all)
 
     if options.once and not options.terse and not printed_all:
         print prefix + "    ..."
