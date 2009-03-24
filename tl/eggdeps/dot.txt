@@ -4,73 +4,73 @@ Formatting the graph as a dot input file
 
 First, let's set up some stuff we're going to need:
 
-  >>> from tl.eggdeps.dot import print_dot
+>>> from tl.eggdeps.dot import print_dot
 
-  >>> def dot_options(**kwargs):
-  ...     options = dict(version_numbers=False,
-  ...                    cluster=False)
-  ...     options.update(kwargs)
-  ...     return Options(**options)
+>>> def dot_options(**kwargs):
+...     options = dict(version_numbers=False,
+...                    cluster=False)
+...     options.update(kwargs)
+...     return Options(**options)
 
 Now we populate a custom working set and compute its dependency graph,
 arranging for one subtree to appear more than once in the graph:
 
-  >>> anton_1 = make_dist("anton-1.egg", depends="""berta
-  ...                                               charlie[extra]""")
-  >>> berta_2 = make_dist("berta-2.egg", depends="charlie")
-  >>> charlie_1_4 = make_dist("charlie-1.4.egg", depends="""[extra]
-  ...                                                       dora""")
-  >>> dora_0_5 = make_dist("dora-0.5.egg")
-  >>> ws = make_working_set(anton_1, berta_2, charlie_1_4, dora_0_5)
+>>> anton_1 = make_dist("anton-1.egg", depends="""berta
+...                                               charlie[extra]""")
+>>> berta_2 = make_dist("berta-2.egg", depends="charlie")
+>>> charlie_1_4 = make_dist("charlie-1.4.egg", depends="""[extra]
+...                                                       dora""")
+>>> dora_0_5 = make_dist("dora-0.5.egg")
+>>> ws = make_working_set(anton_1, berta_2, charlie_1_4, dora_0_5)
 
-  >>> from tl.eggdeps.graph import Graph
-  >>> graph = Graph(working_set=ws)
-  >>> graph.from_working_set()
-  >>> sprint(graph)
-  {'anton': {'berta': set([]), 'charlie': set([])},
-   'berta': {'charlie': set([])},
-   'charlie': {'dora': set(['extra'])},
-   'dora': {}}
+>>> from tl.eggdeps.graph import Graph
+>>> graph = Graph(working_set=ws)
+>>> graph.from_working_set()
+>>> sprint(graph)
+{'anton': {'berta': set([]), 'charlie': set([])},
+ 'berta': {'charlie': set([])},
+ 'charlie': {'dora': set(['extra'])},
+ 'dora': {}}
 
 
 Plain graphs
 ============
 
-  >>> print_dot(graph, dot_options())
-  digraph {
-  "anton" [style="filled", fillcolor="green", label="anton"]
-  "berta" [style="filled", fillcolor="yellow", label="berta"]
-  "dora" [label="dora"]
-  "charlie" [style="filled", fillcolor="yellow", label="charlie"]
-  "anton" -> "charlie"
-  "anton" -> "berta"
-  "berta" -> "charlie"
-  "charlie" -> "dora" [color="lightgrey"]
-  }
+>>> print_dot(graph, dot_options())
+digraph {
+"anton" [style="filled", fillcolor="green", label="anton"]
+"berta" [style="filled", fillcolor="yellow", label="berta"]
+"dora" [label="dora"]
+"charlie" [style="filled", fillcolor="yellow", label="charlie"]
+"anton" -> "charlie"
+"anton" -> "berta"
+"berta" -> "charlie"
+"charlie" -> "dora" [color="lightgrey"]
+}
 
-  >>> print_dot(graph, dot_options(version_numbers=True))
-  digraph {
-  "anton" [... label="anton 1"]
-  "berta" [... label="berta 2"]
-  "dora" [label="dora 0.5"]
-  "charlie" [... label="charlie 1.4"]
-  ...
-  }
+>>> print_dot(graph, dot_options(version_numbers=True))
+digraph {
+"anton" [... label="anton 1"]
+"berta" [... label="berta 2"]
+"dora" [label="dora 0.5"]
+"charlie" [... label="charlie 1.4"]
+...
+}
 
 
 Clustering root nodes and their direct dependencies
 ===================================================
 
-  >>> print_dot(graph, dot_options(cluster=True))
-  digraph {
-  ...
-  subgraph cluster_0 {
-  "charlie"
-  "berta"
-  "anton"
-  }
-  ...
-  }
+>>> print_dot(graph, dot_options(cluster=True))
+digraph {
+...
+subgraph cluster_0 {
+"charlie"
+"berta"
+"anton"
+}
+...
+}
 
 
 .. Local Variables:

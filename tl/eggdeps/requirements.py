@@ -5,7 +5,7 @@ import pprint
 
 import pkg_resources
 
-
+
 def print_list(graph, options):
     """Print a requirements list to standard output.
 

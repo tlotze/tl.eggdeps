@@ -9,7 +9,7 @@ import tl.eggdeps.dot
 import tl.eggdeps.requirements
 import tl.eggdeps.plaintext
 
-
+
 def eggdeps(**options):
     parser = optparse.OptionParser("usage: %prog [options] [specifications]")
     parser.add_option("-i", "--ignore",
@@ -88,7 +88,7 @@ def eggdeps(**options):
         }[options.format]
     formatter(graph, options)
 
-
+
 def unmatcher(names, patterns):
     names = set(names)
     compiled_patterns = [re.compile(pattern) for pattern in patterns]

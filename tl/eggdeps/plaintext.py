@@ -1,7 +1,7 @@
 # Copyright (c) 2007-2008 Thomas Lotze
 # See also LICENSE.txt
 
-
+
 def print_subgraph(graph, mount_points, path, options):
     name = path[-1]
     print_tree = path == mount_points[name]
