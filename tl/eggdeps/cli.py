@@ -11,51 +11,51 @@ import tl.eggdeps.requirements
 import tl.eggdeps.plaintext
 
 
-def eggdeps(**options):
+def eggdeps(**defaults):
     parser = optparse.OptionParser("usage: %prog [options] [specifications]")
     parser.add_option("-i", "--ignore",
                       dest="ignore", action="append",
-                      default=options.get("ignore", []),
+                      default=defaults.get("ignore", []),
                       help="project names to ignore")
     parser.add_option("-I", "--re-ignore",
                       dest="re_ignore", action="append",
-                      default=options.get("re_ignore", []),
+                      default=defaults.get("re_ignore", []),
                       help="regular expression for project names to ignore")
     parser.add_option("-e", "--dead-end",
                       dest="dead_ends", action="append",
-                      default=options.get("dead_ends", []),
+                      default=defaults.get("dead_ends", []),
                       help="names of projects whose dependencies to ignore")
     parser.add_option("-E", "--re-dead-end",
                       dest="re_dead_ends", action="append",
-                      default=options.get("re_dead_ends", []),
+                      default=defaults.get("re_dead_ends", []),
                       help="regular expression for project names "
                            "whose dependencies to ignore")
     parser.add_option("-x", "--no-extras",
                       dest="extras", action="store_false",
-                      default=options.get("extras", True),
+                      default=defaults.get("extras", True),
                       help="always omit extra dependencies")
     parser.add_option("-n", "--version-numbers",
                       dest="version_numbers", action="store_true",
-                      default=options.get("version_numbers", False),
+                      default=defaults.get("version_numbers", False),
                       help="print version numbers of active distributions")
     parser.add_option("-1", "--once",
                       dest="once", action="store_true",
-                      default=options.get("once", False),
+                      default=defaults.get("once", False),
                       help="in plain text output, include each distribution "
                            "only once")
     parser.add_option("-t", "--terse",
                       dest="terse", action="store_true",
-                      default=options.get("terse", False),
+                      default=defaults.get("terse", False),
                       help="in plain text output, omit any hints at "
                             "unprinted distributions, such as ellipses")
     parser.add_option("-d", "--dot",
                       dest="format", action="store_const",
                       const="dot",
-                      default=options.get("format", "plaintext"),
+                      default=defaults.get("format", "plaintext"),
                       help="produce a dot graph")
     parser.add_option("-c", "--cluster",
                       dest="cluster", action="store_true",
-                      default=options.get("cluster", False),
+                      default=defaults.get("cluster", False),
                       help="in a dot graph, cluster direct dependencies "
                            "of each root distribution")
     parser.add_option("-r", "--requirements",
@@ -64,7 +64,7 @@ def eggdeps(**options):
                       help="produce a requirements list")
     parser.add_option("-s", "--version-specs",
                       dest="version_specs", action="store_true",
-                      default=options.get("version_specs", False),
+                      default=defaults.get("version_specs", False),
                       help="in a requirements list, print loosest possible "
                            "version specifications")
     options, specifications = parser.parse_args()
@@ -83,6 +83,9 @@ def eggdeps(**options):
         graph.from_working_set()
 
     options.comment = 'arguments: ' + ' '.join(sys.argv[1:])
+    if defaults:
+        options.comment += '\ndefaults:\n' + '\n'.join(
+            '%s=%r' % item for item in sorted(defaults.iteritems()))
 
     formatter = {
         "plaintext": tl.eggdeps.plaintext.print_graph,
