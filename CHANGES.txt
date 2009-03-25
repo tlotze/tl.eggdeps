@@ -5,6 +5,10 @@ Change log for tl.eggdeps
 0.4 (unreleased)
 ================
 
+
+0.3.2 (2009-03-25)
+==================
+
 Features:
   - Added an API for including a comment in a generated dot file, use it to
     record the arguments eggdeps was called with. Thanks to Christian
