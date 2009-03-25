@@ -221,6 +221,22 @@ plain mandatory dependency:
 >>> graph.roots
 set(['emil'])
 
+If the graph contains a cycle none of whose constituents is a dependency of a
+distribution outside the cycle, one of those constituents will be considered a
+graph root:
+
+>>> emil_1 = make_dist("emil-1.egg", "fritz")
+>>> fritz_5 = make_dist("fritz-5.egg", depends="emil")
+>>> ws = make_working_set(anton_1, emil_1, fritz_5)
+>>> graph = Graph(ws)
+>>> graph.from_working_set()
+>>> sprint(graph)
+{'anton': {},
+ 'emil': {'fritz': set([])},
+ 'fritz': {'emil': set([])}}
+>>> graph.roots
+set(['anton', 'emil'])
+
 Dependencies from a working set analysis take versions into account. The
 following does not report a dependency of berta on charlie as berta requires
 at least charlie 1.5:

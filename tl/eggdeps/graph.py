@@ -1,4 +1,4 @@
-# Copyright (c) 2007 Thomas Lotze
+# Copyright (c) 2007-2009 Thomas Lotze
 # See also LICENSE.txt
 
 import pkg_resources
@@ -63,9 +63,8 @@ class Graph(dict):
         """Build the dependency graph for the whole working set.
         """
         ws = filter(self.show_dist, self.working_set)
-        ws_names = self.names(ws)
-        self.roots = ws_names.copy()
 
+        # Construct nodes and dependencies, ignoring any incompatibilities.
         for dist in ws:
             node = self[dist.project_name] = Node(self, dist)
             if not node.follow:
@@ -82,7 +81,31 @@ class Graph(dict):
                         - plain_names):
                         node.setdefault(dep, set()).add(extra)
 
-            self.roots -= set(node)
+        # Find roots, including one representative of each root cycle, by
+        # removing all direct and implied dependencies of each node from the
+        # set of root candidates.
+        self.roots = self.names(ws).copy()
+
+        # Consider candidates in alphabetic order for predictability.
+        for candidate in sorted(self.roots):
+            # When hitting a root cycle, all of its constituents except the
+            # candidate being considered will be discarded. To prevent that
+            # representative of the cycle from being discarded as a dependency
+            # of each of the other cycle constituents, skip considering
+            # dependencies of candidates that have already been discarded.
+            if candidate not in self.roots:
+                continue
+
+            # Walking the candidate's dependencies needs to discard the
+            # candidate temporarily in order to break infinite loops.
+            self._walk(candidate)
+            self.roots.add(candidate)
+
+    def _walk(self, name):
+        self.roots.remove(name)
+        for dep in self[name]:
+            if dep in self.roots:
+                self._walk(dep)
 
     def names(self, specifications):
         """Return a set of project names to be processed from an iterable of

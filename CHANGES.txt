@@ -14,6 +14,10 @@ Bug fixes:
   - Omission of a subtree in the plaintext output would cause all following
     siblings of the mount point to be skipped.
 
+  - The plaintext graph built from the whole working set would be incomplete
+    if any graph roots were cyclic. One distribution from each such cycle will
+    be considered a root now. This also affects colors in dot graphs.
+
 
 0.3.1 (2008-05-12)
 ==================
