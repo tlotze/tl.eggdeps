@@ -28,9 +28,9 @@ class Graph(dict):
         self.roots = self.names(requirements)
 
         for req in filter(self.show_dist, requirements):
-            self.add_requirement(req)
+            self._add_requirement(req)
 
-    def add_requirement(self, req):
+    def _add_requirement(self, req):
         """Add nodes for a distribution and its dependencies.
 
         This is the recursive part of building the graph from specifications.
@@ -54,10 +54,10 @@ class Graph(dict):
                 for dep in self.names(extra_reqs) - plain_names:
                     node.setdefault(dep, set()).add(extra)
 
-        new_reqs -= node.requires
-        node.requires |= new_reqs
+        new_reqs -= node._requires
+        node._requires |= new_reqs
         for req in filter(self.show_dist, new_reqs):
-            self.add_requirement(req)
+            self._add_requirement(req)
 
     def from_working_set(self):
         """Build the dependency graph for the whole working set.
@@ -135,10 +135,10 @@ class Node(dict):
     def __init__(self, graph, specification):
         self.name = specification.project_name
         self.graph = graph
-        self.requires = set()
         self.follow = self.graph.follow(self.name)
         self.deps = {}
         self.find(specification)
+        self._requires = set()
 
     def find(self, specification):
         """Find a matching distribution in the working set.
