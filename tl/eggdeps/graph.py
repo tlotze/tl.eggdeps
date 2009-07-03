@@ -6,6 +6,40 @@ import pkg_resources
 
 class Graph(dict):
     """A graph of egg dependencies.
+
+    The nodes of the graph represent distributions (sometimes informally
+    called 'packages' or 'eggs'). The edges represent dependencies.
+
+    After creating a graph you need to populate it. To collect information
+    about all installed packages, call:
+
+        graph = Graph()
+        graph.from_working_set()
+
+    To get information about a subset of packages (and their dependencies),
+    call:
+
+        graph = Graph()
+        graph.from_specifications('package1', 'package2')
+
+    There are options for filtering the graph, described in the docstring of
+    the constructor.
+
+    To access a graph node, index the graph using the distribution name. To
+    get its dependencies, look at the 'deps' attribute. For example, if you
+    have a package called 'zope.component' that depends on 'zope.interface',
+    this would be true:
+
+        'zope.interface' in graph['zope.component'].deps
+
+    Setuptools has this notion of extra dependencies. These are optional and
+    are grouped by feature names. For example, 'zope.component' has a 'test'
+    extra that pulls in 'zope.testing' and 'zope.location'. This is
+    represented by listing extra names in a set on a dependency:
+
+        graph['zope.component'].deps['zope.interface'] == set()
+        graph['zope.component'].deps['zope.testing'] == set(['test'])
+
     """
 
     def __init__(self,
@@ -14,6 +48,25 @@ class Graph(dict):
                  follow=lambda name: True,
                  extras=True,
                  ):
+        """Create a dependency graph.
+
+        The graph is initially empty. To populate it with nodes and edges call
+        either ``from_working_set`` or ``from_specifications``.
+
+        You can specify filtering functions:
+
+          show(name): Returns True if the package with the given name and its
+                      dependencies ought to be included in the graph.
+
+          follow(name): Return True if the package with the given name ought
+                        to have its dependencies parsed and included in the
+                        graph.
+
+        You can also indicate whether you want to process information about
+        extra dependencies: if extras is False, all information about extras
+        will be discarded.
+
+        """
         self.working_set = working_set or pkg_resources.WorkingSet()
         self.show = show
         self.follow = follow
