@@ -32,8 +32,7 @@ def print_subgraph(graph, mount_points, path, options):
 
     last_extras = []
     printed_all = True
-    for extras, dep in sorted((sorted(extras), dep)
-                              for dep, extras in node.iteritems()):
+    for extras, dep in node.iter_deps_by_extras():
         # XXX If options.terse, extras whose dependencies will not be printed
         # should not be printed themselves. This requires rewriting most of
         # this module to calculate all output before printing anything.

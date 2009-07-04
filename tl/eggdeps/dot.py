@@ -54,7 +54,7 @@ def print_dot(graph, options):
             print "}"
 
     for node in graph.itervalues():
-        for dep, extras in node.iteritems():
+        for dep, extras in node.iter_deps():
             edge_options = {}
             if extras:
                 edge_options["color"] = "lightgrey"

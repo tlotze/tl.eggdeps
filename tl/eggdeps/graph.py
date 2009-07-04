@@ -95,7 +95,7 @@ class Graph(dict):
 
         if not node:
             for dep in self.names(node.dist.requires()):
-                node[dep] = set()
+                node.depend(dep)
 
         new_reqs = set(node.dist.requires())
         if self.extras:
@@ -104,7 +104,7 @@ class Graph(dict):
                 extra_reqs = node.dist.requires((extra,))
                 new_reqs.update(extra_reqs)
                 for dep in self.names(extra_reqs) - plain_names:
-                    node.setdefault(dep, set()).add(extra)
+                    node.extra_depend(extra, dep)
 
         new_reqs -= node._requires
         node._requires |= new_reqs
@@ -124,14 +124,14 @@ class Graph(dict):
 
             plain_names = self.names(filter(self.find, dist.requires()))
             for dep in plain_names:
-                node[dep] = set()
+                node.depend(dep)
 
             if self.extras:
                 for extra in dist.extras:
                     for dep in (
                         self.names(filter(self.find, dist.requires((extra,))))
                         - plain_names):
-                        node.setdefault(dep, set()).add(extra)
+                        node.extra_depend(extra, dep)
 
         # Find roots, including one representative of each root cycle, by
         # removing all direct and implied dependencies of each node from the
@@ -219,3 +219,31 @@ class Node(dict):
         self.compatible &= found
 
         return found
+
+    def depend(self, dep):
+        """Store a dependency on another distribution.
+
+        dep: name of a dependency
+
+        """
+        self[dep] = set()
+
+    def extra_depend(self, extra, dep):
+        """Store an extra dependency on another distribution.
+
+        extra: name of an extra via which self depends on dep
+        dep: name of a dependency
+
+        """
+        if self.get(dep) == set():
+            # don't record extra dependencies that duplicate a non-extra one
+            return
+
+        self.setdefault(dep, set()).add(extra)
+
+    def iter_deps(self):
+        return self.iteritems()
+
+    def iter_deps_by_extras(self):
+        return sorted((sorted(extras), dep)
+                      for dep, extras in self.iteritems())
