@@ -25,20 +25,19 @@ class Graph(dict):
     There are options for filtering the graph, described in the docstring of
     the constructor.
 
-    To access a graph node, index the graph using the distribution name. To
-    get its dependencies, look at the 'deps' attribute. For example, if you
-    have a package called 'zope.component' that depends on 'zope.interface',
-    this would be true:
+    To access a graph node, index the graph using the distribution name as the
+    key.
 
-        'zope.interface' in graph['zope.component'].deps
+        graph['zope.component']
 
     Setuptools has this notion of extra dependencies. These are optional and
     are grouped by feature names. For example, 'zope.component' has a 'test'
-    extra that pulls in 'zope.testing' and 'zope.location'. This is
-    represented by listing extra names in a set on a dependency:
+    extra that pulls in 'zope.testing' and 'zope.location'. Nodes are mappings
+    of names of their dependencies to sets of extras by way of which the
+    dependencies arise:
 
-        graph['zope.component'].deps['zope.interface'] == set()
-        graph['zope.component'].deps['zope.testing'] == set(['test'])
+        graph['zope.component']['zope.interface'] == set()
+        graph['zope.component']['zope.testing'] == set(['test'])
 
     """
 
@@ -189,7 +188,6 @@ class Node(dict):
         self.name = specification.project_name
         self.graph = graph
         self.follow = self.graph.follow(self.name)
-        self.deps = {}
         self.find(specification)
         self._requires = set()
 
