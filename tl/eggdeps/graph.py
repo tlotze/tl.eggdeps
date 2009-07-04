@@ -90,7 +90,7 @@ class Graph(dict):
         will still be added for it but its dependencies can not be determined.
         """
         node = self.setdefault(req.project_name, Node(self, req))
-        if not (node.find(req) and node.follow):
+        if not (node.require(req) and node.follow):
             return
 
         if not node:
@@ -188,10 +188,10 @@ class Node(dict):
         self.name = specification.project_name
         self.graph = graph
         self.follow = self.graph.follow(self.name)
-        self.find(specification)
+        self.require(specification)
         self._requires = set()
 
-    def find(self, specification):
+    def require(self, specification):
         """Find a matching distribution in the working set.
 
         Returns whether a distribution compatible with the specification
@@ -201,7 +201,7 @@ class Node(dict):
         """
         # Is this for us?
         if specification.project_name != self.name:
-            raise ValueError("A '%s' node cannot find a '%s' distribution." %
+            raise ValueError("A %r node cannot satisfy a %r requirement." %
                              (self.name, specification.project_name))
 
         # Search even if the specification is already a distribution to make
