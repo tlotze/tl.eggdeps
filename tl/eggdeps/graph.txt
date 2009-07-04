@@ -181,17 +181,39 @@ either with or without extras involved:
 >>> list(node.iter_deps())
 [('charlie', set(['cool-extra'])), ('berta', set([]))]
 
+Dependencies can target packages with one or more extras activated. In that
+case, an iterable of extras of the dependency can be specified. We will not
+see anything about this the way we have looked at the stored dependencies so
+far, but there is another method that reads the storage and returns more
+detailed information:
+
+>>> node.depend('berta', ('hot-extra',))
+>>> node.extra_depend('cool-feature', 'charlie', ('more-coolness',))
+>>> list(node.iter_deps())
+[('charlie', set(['cool-feature', 'cool-extra'])),
+ ('berta', set([]))]
+>>> list(node.iter_deps_with_extras())
+[('charlie', None, set(['cool-feature', 'cool-extra'])),
+ ('charlie', 'more-coolness', set(['cool-feature'])),
+ ('berta', None, set([])),
+ ('berta', 'hot-extra', set([]))]
+
 If the same package is a dependency both via an extra and without one, the
 information on the extra is discarded:
 
 >>> node.depend('charlie')
 >>> list(node.iter_deps())
 [('charlie', set([])), ('berta', set([]))]
+>>> list(node.iter_deps_with_extras())
+[('charlie', None, set([])),
+ ('charlie', 'more-coolness', set(['cool-feature'])),
+ ('berta', None, set([])),
+ ('berta', 'hot-extra', set([]))]
 
 A node remembers which of its extras have been used over time:
 
->>> node.extras_used
-set(['cool-extra'])
+>>> sorted(node.extras_used)
+['cool-extra', 'cool-feature']
 
 
 Analysing the working set

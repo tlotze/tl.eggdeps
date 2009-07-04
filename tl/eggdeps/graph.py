@@ -242,15 +242,17 @@ class Node(CaseInsensitiveDict):
 
         return found
 
-    def depend(self, dep):
+    def depend(self, dep, dep_extras=()):
         """Store a dependency on another distribution.
 
         dep: name of a dependency
 
         """
-        self.setdefault(dep, {})[None] = set()
+        dep_edges = self.setdefault(dep, {})
+        for dep_extra in set((None,)).union(dep_extras):
+            dep_edges[dep_extra] = set()
 
-    def extra_depend(self, extra, dep):
+    def extra_depend(self, extra, dep, dep_extras=()):
         """Store an extra dependency on another distribution.
 
         extra: name of an extra via which self depends on dep
@@ -258,11 +260,11 @@ class Node(CaseInsensitiveDict):
 
         """
         self.extras_used.add(extra)
-        if self.get(dep, {}).get(None) == set():
+        dep_edges = self.setdefault(dep, {})
+        for dep_extra in set((None,)).union(dep_extras):
             # don't record extra dependencies that duplicate a non-extra one
-            return
-
-        self.setdefault(dep, {}).setdefault(None, set()).add(extra)
+            if dep_edges.get(dep_extra) != set():
+                dep_edges.setdefault(dep_extra, set()).add(extra)
 
     def iter_deps(self):
         for dep, dep_extras in self.iteritems():
@@ -274,3 +276,8 @@ class Node(CaseInsensitiveDict):
                 extras |= edges
             else:
                 yield dep, extras
+
+    def iter_deps_with_extras(self):
+        for dep, dep_extras in self.iteritems():
+            for extra, edges in dep_extras.iteritems():
+                yield dep, extra, edges
