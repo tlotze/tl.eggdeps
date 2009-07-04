@@ -267,17 +267,32 @@ class Node(CaseInsensitiveDict):
                 dep_edges.setdefault(dep_extra, set()).add(extra)
 
     def iter_deps(self):
+        """Yield (name, source extras) pairs of dependencies.
+
+        Source extras are extras of the distribution represented by self by
+        way of which the respective named dependencies are connected.
+
+        """
         for dep, dep_extras in self.iteritems():
             extras = set()
-            for edges in dep_extras.values():
-                if edges == set():
+            for src_extras in dep_extras.values():
+                if src_extras == set():
                     yield dep, set()
                     break
-                extras |= edges
+                extras |= src_extras
             else:
                 yield dep, extras
 
     def iter_deps_with_extras(self):
+        """Yield (name, dep. extras, source extras) triples of dependencies.
+
+        Source extras are extras of the distribution represented by self by
+        way of which the respective named dependencies are connected.
+
+        Dependency extras are those extras of each dependency that are being
+        required by the distribution represented by self.
+
+        """
         for dep, dep_extras in self.iteritems():
-            for extra, edges in dep_extras.iteritems():
-                yield dep, extra, edges
+            for extra, src_extras in dep_extras.iteritems():
+                yield dep, extra, src_extras
