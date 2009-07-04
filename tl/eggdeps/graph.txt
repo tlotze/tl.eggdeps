@@ -188,6 +188,11 @@ information on the extra is discarded:
 >>> list(node.iter_deps())
 [('charlie', set([])), ('berta', set([]))]
 
+A node remembers which of its extras have been used over time:
+
+>>> node.extras_used
+set(['cool-extra'])
+
 
 Analysing the working set
 =========================

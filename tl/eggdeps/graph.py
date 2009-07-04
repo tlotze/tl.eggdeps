@@ -209,6 +209,7 @@ class Node(CaseInsensitiveDict):
         self.name = specification.project_name
         self.graph = graph
         self.follow = self.graph.follow(self.name)
+        self.extras_used = set()
         self.require(specification)
         self._requires = set()
 
@@ -256,6 +257,7 @@ class Node(CaseInsensitiveDict):
         dep: name of a dependency
 
         """
+        self.extras_used.add(extra)
         if self.get(dep, {}).get(None) == set():
             # don't record extra dependencies that duplicate a non-extra one
             return
