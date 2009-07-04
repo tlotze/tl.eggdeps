@@ -264,7 +264,3 @@ class Node(CaseInsensitiveDict):
 
     def iter_deps(self):
         return self.iteritems()
-
-    def iter_deps_by_extras(self):
-        return sorted((sorted(extras), dep)
-                      for dep, extras in self.iteritems())
