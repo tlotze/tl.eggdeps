@@ -170,6 +170,24 @@ Traceback (most recent call last):
 ...
 ValueError: A 'anton' node cannot satisfy a 'berta' requirement.
 
+Nodes have an API for having them store and list dependencies on other nodes,
+either with or without extras involved:
+
+>>> node.depend('berta')
+>>> list(node.iter_deps())
+[('berta', set([]))]
+
+>>> node.extra_depend('cool-extra', 'charlie')
+>>> list(node.iter_deps())
+[('charlie', set(['cool-extra'])), ('berta', set([]))]
+
+If the same package is a dependency both via an extra and without one, the
+information on the extra is discarded:
+
+>>> node.depend('charlie')
+>>> list(node.iter_deps())
+[('charlie', set([])), ('berta', set([]))]
+
 
 Analysing the working set
 =========================

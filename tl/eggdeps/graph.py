@@ -47,7 +47,7 @@ class Graph(CaseInsensitiveDict):
     To access a graph node, index the graph using the distribution name as the
     key.
 
-        graph['zope.component']
+        node = graph['zope.component']
 
     Setuptools has this notion of extra dependencies. These are optional and
     are grouped by feature names. For example, 'zope.component' has a 'test'
@@ -55,8 +55,8 @@ class Graph(CaseInsensitiveDict):
     of names of their dependencies to sets of extras by way of which the
     dependencies arise:
 
-        graph['zope.component']['zope.interface'] == set()
-        graph['zope.component']['zope.testing'] == set(['test'])
+        list(nodes.iter_deps()) == [('zope.interface', set()),
+                                    ('zope.testing', set(['test']))]
 
     """
 
