@@ -28,9 +28,9 @@ arranging for one subtree to appear more than once in the graph:
 >>> graph = Graph(working_set=ws)
 >>> graph.from_working_set()
 >>> sprint(graph)
-{'anton': {'berta': set([]), 'charlie': set([])},
- 'berta': {'charlie': set([])},
- 'charlie': {'dora': set(['extra'])},
+{'anton': {'berta': {None: set([])}, 'charlie': {None: set([])}},
+ 'berta': {'charlie': {None: set([])}},
+ 'charlie': {'dora': {None: set(['extra'])}},
  'dora': {}}
 
 

@@ -24,8 +24,8 @@ arranging for one distribution to appear more than once in the graph:
 >>> graph = Graph(working_set=ws)
 >>> graph.from_working_set()
 >>> sprint(graph)
-{'anton': {'berta': set([]), 'charlie': set([])},
- 'berta': {'charlie': set([])},
+{'anton': {'berta': {None: set([])}, 'charlie': {None: set([])}},
+ 'berta': {'charlie': {None: set([])}},
  'charlie': {}}
 
 

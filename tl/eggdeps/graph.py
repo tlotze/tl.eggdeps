@@ -247,7 +247,7 @@ class Node(CaseInsensitiveDict):
         dep: name of a dependency
 
         """
-        self[dep] = set()
+        self.setdefault(dep, {})[None] = set()
 
     def extra_depend(self, extra, dep):
         """Store an extra dependency on another distribution.
@@ -256,11 +256,19 @@ class Node(CaseInsensitiveDict):
         dep: name of a dependency
 
         """
-        if self.get(dep) == set():
+        if self.get(dep, {}).get(None) == set():
             # don't record extra dependencies that duplicate a non-extra one
             return
 
-        self.setdefault(dep, set()).add(extra)
+        self.setdefault(dep, {}).setdefault(None, set()).add(extra)
 
     def iter_deps(self):
-        return self.iteritems()
+        for dep, dep_extras in self.iteritems():
+            extras = set()
+            for edges in dep_extras.values():
+                if edges == set():
+                    yield dep, set()
+                    break
+                extras |= edges
+            else:
+                yield dep, extras

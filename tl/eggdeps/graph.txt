@@ -194,8 +194,8 @@ be reported, including mandatory as well as extra dependencies:
 >>> graph = Graph(ws)
 >>> graph.from_working_set()
 >>> sprint(graph)
-{'anton': {'berta': set([])},
- 'berta': {'dora': set(['extra'])},
+{'anton': {'berta': {None: set([])}},
+ 'berta': {'dora': {None: set(['extra'])}},
  'dora': {}}
 
 The graph has a set of roots, which are the names of those distributions that
@@ -217,7 +217,7 @@ plain mandatory dependency:
 >>> graph.from_working_set()
 >>> sprint(graph)
 {'anton': {},
- 'emil': {'anton': set([])}}
+ 'emil': {'anton': {None: set([])}}}
 >>> graph.roots
 set(['emil'])
 
@@ -232,8 +232,8 @@ graph root:
 >>> graph.from_working_set()
 >>> sprint(graph)
 {'anton': {},
- 'emil': {'fritz': set([])},
- 'fritz': {'emil': set([])}}
+ 'emil': {'fritz': {None: set([])}},
+ 'fritz': {'emil': {None: set([])}}}
 >>> graph.roots
 set(['anton', 'emil'])
 
@@ -260,7 +260,7 @@ Extra dependencies may be ignored completely to simplify a complex graph:
 >>> graph = Graph(ws, extras=False)
 >>> graph.from_working_set()
 >>> sprint(graph)
-{'anton': {'berta': set([])},
+{'anton': {'berta': {None: set([])}},
  'berta': {},
  'dora': {}}
 >>> sorted(graph.roots)
@@ -286,7 +286,7 @@ function that determines which distributions to follow the dependencies of:
 >>> graph = Graph(ws, follow=lambda name: name != "berta")
 >>> graph.from_working_set()
 >>> sprint(graph)
-{'anton': {'berta': set([])},
+{'anton': {'berta': {None: set([])}},
  'berta': {},
  'dora': {}}
 >>> sorted(graph.roots)
@@ -317,7 +317,7 @@ In this  example, anton does not depend on berta and berta's dependencies:
 >>> graph = Graph(ws)
 >>> graph.from_specifications("berta")
 >>> sprint(graph)
-{'berta': {'charlie': set([])},
+{'berta': {'charlie': {None: set([])}},
  'charlie': {}}
 
 The roots of the graph are the specified distributions now:
@@ -331,8 +331,8 @@ included now. In the example, this applies to dora:
 >>> graph = Graph(ws)
 >>> graph.from_specifications("berta [extra]")
 >>> sprint(graph)
-{'berta': {'charlie': set([]),
-           'dora': set(['extra'])},
+{'berta': {'charlie': {None: set([])},
+           'dora': {None: set(['extra'])}},
  'charlie': {},
  'dora': {}}
 >>> graph.roots
@@ -354,7 +354,7 @@ charlie is treated as if it wasn't active at all:
 >>> graph = Graph(ws)
 >>> graph.from_specifications("berta")
 >>> sprint(graph)
-{'berta': {'charlie': set([])},
+{'berta': {'charlie': {None: set([])}},
  'charlie': {}}
 
 >>> graph["charlie"].dist
@@ -371,7 +371,7 @@ nodes only by way of extras. In our example, this applies to anton:
 >>> graph = Graph(ws, extras=False)
 >>> graph.from_specifications("berta [extra]")
 >>> sprint(graph)
-{'berta': {'charlie': set([])},
+{'berta': {'charlie': {None: set([])}},
  'charlie': {}}
 >>> graph.roots
 set(['berta'])
@@ -394,7 +394,7 @@ missing from the graph:
 >>> graph = Graph(ws, follow=lambda name: name != "berta")
 >>> graph.from_specifications("anton")
 >>> sprint(graph)
-{'anton': {'berta': set([])},
+{'anton': {'berta': {None: set([])}},
  'berta': {}}
 >>> graph.roots
 set(['anton'])
@@ -417,15 +417,15 @@ missing:
 >>> graph.from_specifications("fritz")
 >>> sprint(graph)
 {'charlie': {},
- 'fritz': {'charlie': set([])}}
+ 'fritz': {'charlie': {None: set([])}}}
 
 >>> graph = Graph(ws, follow=lambda name: name != "berta")
 >>> graph.from_specifications("fritz")
 >>> sprint(graph)
 {'berta': {},
  'charlie': {},
- 'fritz': {'berta': set([]),
-           'charlie': set([])}}
+ 'fritz': {'berta': {None: set([])},
+           'charlie': {None: set([])}}}
 >>> graph["berta"].follow
 False
 >>> graph["charlie"].follow
