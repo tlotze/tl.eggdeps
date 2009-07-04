@@ -58,7 +58,7 @@ def find_mount_point(graph, mount_points, best_keys, path, sort_key):
     mount_points[name] = path
     best_keys[name] = sort_key
 
-    for dep, extras in graph[name].iteritems():
+    for dep, extras in graph[name].iter_deps():
         find_mount_point(graph, mount_points, best_keys, path + (dep,),
                          (sort_key[0] + (bool(extras),),
                           sort_key[1] + (sorted(extras), name)))
