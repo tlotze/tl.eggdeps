@@ -1,10 +1,29 @@
 # Copyright (c) 2007-2009 Thomas Lotze
 # See also LICENSE.txt
 
+import UserDict
 import pkg_resources
 
 
-class Graph(dict):
+class CaseInsensitiveDict(UserDict.IterableUserDict):
+
+    def __getitem__(self, key):
+        return self.data[key.lower()]
+
+    def __setitem__(self, key, value):
+        self.data[key.lower()] = value
+
+    def __delitem__(self, key):
+        del self.data[key.lower()]
+
+    def __contains__(self, key):
+        return key.lower() in self.data
+
+    def keys(self):
+        return self.data.keys()
+
+
+class Graph(CaseInsensitiveDict):
     """A graph of egg dependencies.
 
     The nodes of the graph represent distributions (sometimes informally
@@ -66,6 +85,7 @@ class Graph(dict):
         will be discarded.
 
         """
+        CaseInsensitiveDict.__init__(self)
         self.working_set = working_set or pkg_resources.WorkingSet()
         self.show = show
         self.follow = follow
@@ -164,7 +184,7 @@ class Graph(dict):
         either requirements or distributions.
         """
         return set(filter(self.show,
-                          (x.project_name for x in specifications)))
+                          (x.project_name.lower() for x in specifications)))
 
     def find(self, requirement):
         """Find a distribution in the working set associated with the graph.
@@ -177,7 +197,7 @@ class Graph(dict):
             return None
 
 
-class Node(dict):
+class Node(CaseInsensitiveDict):
     """A graph node representing an egg and its dependencies.
     """
 
@@ -185,6 +205,7 @@ class Node(dict):
     compatible = True
 
     def __init__(self, graph, specification):
+        CaseInsensitiveDict.__init__(self)
         self.name = specification.project_name
         self.graph = graph
         self.follow = self.graph.follow(self.name)

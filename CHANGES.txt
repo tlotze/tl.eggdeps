@@ -5,7 +5,11 @@ Change log for tl.eggdeps
 0.4 (unreleased)
 ================
 
-- Several code clean-ups, added some documentation.
+Bug fixes:
+  - Work with distribution names that occur with inconsistent capitalisation.
+
+Organisatin:
+  - Several code clean-ups, added documentation (thanks to Marius Gedminas).
 
 
 0.3.2 (2009-03-25)
