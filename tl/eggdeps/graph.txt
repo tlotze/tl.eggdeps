@@ -193,7 +193,7 @@ detailed information:
 [('charlie', set(['cool-feature', 'cool-extra'])),
  ('berta', set([]))]
 >>> list(node.iter_deps_with_extras())
-[('charlie', None, set(['cool-feature', 'cool-extra'])),
+[('charlie', None, set(['cool-extra'])),
  ('charlie', 'more-coolness', set(['cool-feature'])),
  ('berta', None, set([])),
  ('berta', 'hot-extra', set([]))]
