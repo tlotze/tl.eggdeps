@@ -1,7 +1,6 @@
 # Copyright (c) 2007-2009 Thomas Lotze
 # See also LICENSE.txt
 
-import UserDict
 import os.path
 import unittest
 from zope.testing import doctest
@@ -30,7 +29,7 @@ def make_working_set(*dists):
 def _sprint(value):
     if isinstance(value, set):
         return "set([%s])" % ", ".join(repr(elem) for elem in sorted(value))
-    if isinstance(value, (dict, UserDict.UserDict)):
+    if isinstance(value, dict):
         return "{%s}" % ", ".join("%r: %s" % (key, _sprint(value))
                                   for key, value in sorted(value.iteritems()))
     return repr(value)

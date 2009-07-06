@@ -1,29 +1,10 @@
 # Copyright (c) 2007-2009 Thomas Lotze
 # See also LICENSE.txt
 
-import UserDict
 import pkg_resources
 
 
-class CaseInsensitiveDict(UserDict.IterableUserDict):
-
-    def __getitem__(self, key):
-        return self.data[key.lower()]
-
-    def __setitem__(self, key, value):
-        self.data[key.lower()] = value
-
-    def __delitem__(self, key):
-        del self.data[key.lower()]
-
-    def __contains__(self, key):
-        return key.lower() in self.data
-
-    def keys(self):
-        return self.data.keys()
-
-
-class Graph(CaseInsensitiveDict):
+class Graph(dict):
     """A graph of egg dependencies.
 
     The nodes of the graph represent distributions (sometimes informally
@@ -85,13 +66,12 @@ class Graph(CaseInsensitiveDict):
         will be discarded.
 
         """
-        CaseInsensitiveDict.__init__(self)
         self.working_set = working_set or pkg_resources.WorkingSet()
         self.show = show
         self.follow = follow
         self.extras = extras
         self.roots = ()
-        self.show_dist = lambda spec: show(spec.project_name)
+        self.show_dist = lambda spec: show(spec.project_name.lower())
 
     def from_specifications(self, *specifications):
         """Build the dependency graph starting from one or more eggs.
@@ -109,7 +89,7 @@ class Graph(CaseInsensitiveDict):
         If the distribution can not be found at the required version, a node
         will still be added for it but its dependencies can not be determined.
         """
-        node = self.setdefault(req.project_name, Node(self, req))
+        node = self.setdefault(req.project_name.lower(), Node(self, req))
         if not (node.require(req) and node.follow):
             return
 
@@ -138,7 +118,7 @@ class Graph(CaseInsensitiveDict):
 
         # Construct nodes and dependencies, ignoring any incompatibilities.
         for dist in ws:
-            node = self[dist.project_name] = Node(self, dist)
+            node = self[dist.project_name.lower()] = Node(self, dist)
             if not node.follow:
                 continue
 
@@ -197,7 +177,7 @@ class Graph(CaseInsensitiveDict):
             return None
 
 
-class Node(CaseInsensitiveDict):
+class Node(dict):
     """A graph node representing an egg and its dependencies.
     """
 
@@ -205,9 +185,8 @@ class Node(CaseInsensitiveDict):
     compatible = True
 
     def __init__(self, graph, specification):
-        CaseInsensitiveDict.__init__(self)
-        self.name = specification.project_name
         self.graph = graph
+        self.name = specification.project_name.lower()
         self.follow = self.graph.follow(self.name)
         self.extras_used = set()
         self.require(specification)
@@ -222,7 +201,7 @@ class Node(CaseInsensitiveDict):
         Raises ValueError if the specification is for a different project.
         """
         # Is this for us?
-        if specification.project_name != self.name:
+        if specification.project_name.lower() != self.name:
             raise ValueError("A %r node cannot satisfy a %r requirement." %
                              (self.name, specification.project_name))
 

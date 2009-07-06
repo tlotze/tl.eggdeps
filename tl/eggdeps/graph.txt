@@ -487,14 +487,15 @@ name of a distribution occured with different capitalization in different
 places. Since distribution names are supposed to be case-insensitive, the
 following should work as expected:
 
->>> anton_1 = make_dist("anton-1.egg", depends="Berta")
->>> berta_2 = make_dist("berta-2.egg")
+>>> anton_1 = make_dist("anton-1.egg", depends="berta")
+>>> berta_2 = make_dist("Berta-2.egg")
 >>> ws = make_working_set(anton_1, berta_2)
 >>> graph = Graph(working_set=ws)
 >>> graph.from_working_set()
->>> node_anton = graph['Anton']
->>> node_anton.dist.requires()[0].project_name in graph
-True
+>>> sprint(graph)
+{'anton': {'berta': {None: set([])}}, 'berta': {}}
+>>> graph.roots
+set(['anton'])
 
 
 .. Local Variables:
