@@ -71,7 +71,6 @@ class Graph(dict):
         self.follow = follow
         self.extras = extras
         self.roots = ()
-        self.show_dist = lambda spec: show(spec.project_name.lower())
 
     def from_specifications(self, *specifications):
         """Build the dependency graph starting from one or more eggs.
@@ -79,23 +78,22 @@ class Graph(dict):
         requirements = set(pkg_resources.parse_requirements(specifications))
         self.roots = self.names(requirements)
 
-        for req in filter(self.show_dist, requirements):
-            self._add_requirement(req)
+        for req, node in self.filter(requirements):
+            self._add_requirement(req, node)
 
-    def _add_requirement(self, req):
+    def _add_requirement(self, req, node):
         """Add nodes for a distribution and its dependencies.
 
         This is the recursive part of building the graph from specifications.
         If the distribution can not be found at the required version, a node
         will still be added for it but its dependencies can not be determined.
         """
-        node = self.setdefault(req.project_name.lower(), Node(self, req))
         if not (node.require(req) and node.follow):
             return
 
         if not node:
-            for dep in self.names(node.dist.requires()):
-                node.depend(dep)
+            for dep, dep_node in self.filter(node.dist.requires()):
+                node.depend(dep_node.name, dep.extras)
 
         new_reqs = set(node.dist.requires())
         if self.extras:
@@ -108,35 +106,32 @@ class Graph(dict):
 
         new_reqs -= node._requires
         node._requires |= new_reqs
-        for req in filter(self.show_dist, new_reqs):
-            self._add_requirement(req)
+        for req, req_node in self.filter(new_reqs):
+            self._add_requirement(req, req_node)
 
     def from_working_set(self):
         """Build the dependency graph for the whole working set.
         """
-        ws = filter(self.show_dist, self.working_set)
+        ws = set(self.filter(self.working_set))
 
         # Construct nodes and dependencies, ignoring any incompatibilities.
-        for dist in ws:
-            node = self[dist.project_name.lower()] = Node(self, dist)
+        for dist, node in ws:
             if not node.follow:
                 continue
 
-            plain_names = self.names(filter(self.find, dist.requires()))
-            for dep in plain_names:
-                node.depend(dep)
-
             if self.extras:
                 for extra in dist.extras:
-                    for dep in (
-                        self.names(filter(self.find, dist.requires((extra,))))
-                        - plain_names):
-                        node.extra_depend(extra, dep)
+                    for dep, dep_node in self.filter(dist.requires((extra,)),
+                                                     True):
+                        node.extra_depend(extra, dep_node.name, dep.extras)
+
+            for dep, dep_node in self.filter(dist.requires(), True):
+                node.depend(dep_node.name, dep.extras)
 
         # Find roots, including one representative of each root cycle, by
         # removing all direct and implied dependencies of each node from the
         # set of root candidates.
-        self.roots = self.names(ws).copy()
+        self.roots = set(node.name for spec, node in ws)
 
         # Consider candidates in alphabetic order for predictability.
         for candidate in sorted(self.roots):
@@ -159,12 +154,28 @@ class Graph(dict):
             if dep in self.roots:
                 self._walk(dep)
 
+    def filter(self, specifications, find=False):
+        """Yield pairs of specifications and belonging nodes that should be
+        included in the graph.
+
+        Specifications are either requirements or distributions.
+
+        """
+        for spec in specifications:
+            name = spec.project_name.lower()
+            if not self.show(name):
+                continue
+            if find and not self.find(spec):
+                continue
+            if name not in self:
+                self[name] = Node(self, spec)
+            yield spec, self[name]
+
     def names(self, specifications):
         """Return a set of project names to be processed from an iterable of
         either requirements or distributions.
         """
-        return set(filter(self.show,
-                          (x.project_name.lower() for x in specifications)))
+        return set(node.name for spec, node in self.filter(specifications))
 
     def find(self, requirement):
         """Find a distribution in the working set associated with the graph.
@@ -191,6 +202,9 @@ class Node(dict):
         self.extras_used = set()
         self.require(specification)
         self._requires = set()
+
+    def __hash__(self):
+        return hash(self.name)
 
     def require(self, specification):
         """Find a matching distribution in the working set.
@@ -221,17 +235,17 @@ class Node(dict):
 
         return found
 
-    def depend(self, dep, dep_extras=(None,)):
+    def depend(self, dep, dep_extras=()):
         """Store a dependency on another distribution.
 
         dep: name of a dependency
 
         """
         dep_edges = self.setdefault(dep, {})
-        for dep_extra in dep_extras:
+        for dep_extra in dep_extras or (None,):
             dep_edges[dep_extra] = set()
 
-    def extra_depend(self, extra, dep, dep_extras=(None,)):
+    def extra_depend(self, extra, dep, dep_extras=()):
         """Store an extra dependency on another distribution.
 
         extra: name of an extra via which self depends on dep
@@ -240,7 +254,7 @@ class Node(dict):
         """
         self.extras_used.add(extra)
         dep_edges = self.setdefault(dep, {})
-        for dep_extra in dep_extras:
+        for dep_extra in dep_extras or (None,):
             # don't record extra dependencies that duplicate a non-extra one
             if dep_edges.get(dep_extra) != set():
                 dep_edges.setdefault(dep_extra, set()).add(extra)

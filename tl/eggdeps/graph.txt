@@ -51,6 +51,18 @@ we have to specify something interesting to see an effect:
 >>> graph.names(ws)
 set(['anton'])
 
+Another method actually named ``filter`` yields pairs of matching
+specifications and associated graph nodes for the distribution to be included
+by said rules. (For more on nodes, see below.)
+
+>>> graph = Graph(working_set=ws)
+>>> list(graph.filter(ws))
+[(anton 1 (.../anton-1.egg), {}), (berta 2 (.../berta-2.egg), {})]
+
+>>> graph = Graph(ws, show=lambda name: name < "b")
+>>> list(graph.filter(ws))
+[(anton 1 (.../anton-1.egg), {})]
+
 Filtering distributions
 -----------------------
 
@@ -59,19 +71,6 @@ The filter for distributions to be shown is stored on the graph instance:
 >>> graph.show("anton")
 True
 >>> graph.show("berta")
-False
-
-Another filter is created from it that works on Distribution and Requirement
-instances instead of names:
-
->>> graph.show_dist(anton_1)
-True
->>> graph.show_dist(berta_2)
-False
-
->>> graph.show_dist(anton_1.as_requirement())
-True
->>> graph.show_dist(berta_2.as_requirement())
 False
 
 Finding distributions
@@ -240,7 +239,7 @@ be reported, including mandatory as well as extra dependencies:
 >>> graph.from_working_set()
 >>> sprint(graph)
 {'anton': {'berta': {None: set([])}},
- 'berta': {'dora': {None: set(['extra'])}},
+ 'berta': {'dora': {'test': set(['extra'])}},
  'dora': {}}
 
 The graph has a set of roots, which are the names of those distributions that

@@ -5,6 +5,10 @@ Change log for tl.eggdeps
 0.4 (unreleased)
 ================
 
+Features:
+  - Handle more detailed information about what extras of other distributions
+    are being depended upon by each distribution in the graph.
+
 Bug fixes:
   - Work with distribution names that occur with inconsistent capitalisation.
 
