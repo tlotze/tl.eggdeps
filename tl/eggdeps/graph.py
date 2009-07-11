@@ -11,13 +11,13 @@ class Graph(dict):
     called 'packages' or 'eggs'). The edges represent dependencies.
 
     After creating a graph you need to populate it. To collect information
-    about all installed packages, call:
+    about all installed packages, call::
 
         graph = Graph()
         graph.from_working_set()
 
     To get information about a subset of packages (and their dependencies),
-    call:
+    call::
 
         graph = Graph()
         graph.from_specifications('package1', 'package2')
@@ -26,7 +26,7 @@ class Graph(dict):
     the constructor.
 
     To access a graph node, index the graph using the distribution name as the
-    key.
+    key::
 
         node = graph['zope.component']
 
@@ -34,7 +34,7 @@ class Graph(dict):
     are grouped by feature names. For example, 'zope.component' has a 'test'
     extra that pulls in 'zope.testing' and 'zope.location'. Nodes are mappings
     of names of their dependencies to sets of extras by way of which the
-    dependencies arise:
+    dependencies arise::
 
         list(nodes.iter_deps()) == [('zope.interface', set()),
                                     ('zope.testing', set(['test']))]

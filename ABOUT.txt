@@ -1,0 +1,29 @@
+================
+About tl.eggdeps
+================
+
+:Author:
+    Thomas Lotze (thomas@thomas-lotze.de, http://thomas-lotze.de/)
+
+:Web home:
+    http://thomas-lotze.de/en/software/eggdeps/
+
+:Online documentation:
+    http://packages.python.org/tl.eggdeps/
+
+:PyPI page:
+    http://pypi.python.org/pypi/tl.eggdeps/
+
+:Subversion home:
+    https://svn.thomas-lotze.de/repos/public/tl.eggdeps/
+
+:Subversion web view:
+    http://svn.thomas-lotze.de/tl.eggdeps/
+
+:Current change log:
+    https://svn.thomas-lotze.de/repos/public/tl.eggdeps/trunk/CHANGES.txt
+
+
+.. Local Variables:
+.. mode: rst
+.. End:

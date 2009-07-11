@@ -1,0 +1,23 @@
+tl.eggdeps documentation contents
+=================================
+
+.. toctree::
+    :maxdepth: 3
+
+    README
+    doc/unittests
+    doc/modules
+    doc/about
+
+
+Indices and tables
+==================
+
+- :ref:`genindex`
+- :ref:`modindex`
+- :ref:`search`
+
+
+.. Local Variables:
+.. mode: rst
+.. End:

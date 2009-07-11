@@ -12,8 +12,10 @@ Features:
 Bug fixes:
   - Work with distribution names that occur with inconsistent capitalisation.
 
-Organisatin:
+Organisation:
   - Several code clean-ups, added documentation (thanks to Marius Gedminas).
+
+  - Use sphinx to build documentation.
 
 
 0.3.2 (2009-03-25)

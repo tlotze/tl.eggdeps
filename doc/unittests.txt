@@ -1,0 +1,16 @@
+==========
+Unit tests
+==========
+
+.. toctree::
+    :maxdepth: 3
+
+    ../tl/eggdeps/graph
+    ../tl/eggdeps/plaintext
+    ../tl/eggdeps/dot
+    ../tl/eggdeps/requirements
+
+
+.. Local Variables:
+.. mode: rst
+.. End:

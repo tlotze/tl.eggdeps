@@ -1,0 +1,17 @@
+=======
+Modules
+=======
+
+.. autosummary::
+    :toctree: ./
+
+    tl.eggdeps.graph
+    tl.eggdeps.plaintext
+    tl.eggdeps.dot
+    tl.eggdeps.requirements
+    tl.eggdeps.cli
+
+
+.. Local Variables:
+.. mode: rst
+.. End:

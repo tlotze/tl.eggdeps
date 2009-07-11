@@ -13,9 +13,12 @@ from setuptools import setup, find_packages
 
 project_path = lambda *names: os.path.join(os.path.dirname(__file__), *names)
 
-longdesc = open(project_path("README.txt")).read()
+longdesc = "\n\n".join((open(project_path("README.txt")).read(),
+                        open(project_path("ABOUT.txt")).read()))
 
-data_files = [("", glob.glob(project_path("*.txt")))]
+root_files = glob.glob(project_path("*.txt"))
+data_files = [("", [name for name in root_files
+                    if os.path.split(name)[1] != "index.txt"])]
 
 entry_points = {
     "console_scripts": [
@@ -54,7 +57,7 @@ setup(name="tl.eggdeps",
       classifiers=classifiers,
       author="Thomas Lotze",
       author_email="thomas@thomas-lotze.de",
-      url="http://www.thomas-lotze.de/en/software/eggdeps/",
+      url="http://thomas-lotze.de/en/software/eggdeps/",
       license="ZPL 2.1",
       packages=find_packages(),
       entry_points=entry_points,
