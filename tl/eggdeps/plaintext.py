@@ -1,10 +1,10 @@
-# Copyright (c) 2007-2008 Thomas Lotze
+# Copyright (c) 2007-2009 Thomas Lotze
 # See also LICENSE.txt
 
 
-def print_subgraph(graph, mount_points, path, options):
+def print_subgraph(graph, mount_points, path, seen, options):
     name = path[-1]
-    print_tree = path == mount_points[name]
+    print_tree = (path == mount_points[name] and name not in seen)
 
     if options.once and not print_tree:
         return False
@@ -30,20 +30,28 @@ def print_subgraph(graph, mount_points, path, options):
     if not print_tree:
         return False
 
-    last_extras = []
+    deps_by_extra = {None: set()}
+    for dep, extras in node.iter_deps():
+        if extras:
+            for extra in extras:
+                deps_by_extra.setdefault(extra, set()).add(dep)
+        else:
+            deps_by_extra[None].add(dep)
+
     printed_all = True
-    for extras, dep in sorted((sorted(extras), dep)
-                              for dep, extras in node.iter_deps()):
+    seen = set()
+    for extra, deps in sorted(deps_by_extra.items()):
         # XXX If options.terse, extras whose dependencies will not be printed
         # should not be printed themselves. This requires rewriting most of
         # this module to calculate all output before printing anything.
-        if extras != last_extras:
-            print prefix + "  [%s]" % ','.join(extras)
-            last_extras = extras
+        if extra:
+            print prefix + "  [%s]" % extra
 
-        printed_all = (print_subgraph(graph, mount_points,
-                                      path + (dep,), options)
-                       and printed_all)
+        for dep in sorted(deps):
+            printed_all = (print_subgraph(graph, mount_points,
+                                          path + (dep,), seen, options)
+                           and printed_all)
+            seen.add(dep)
 
     if options.once and not options.terse and not printed_all:
         print prefix + "    ..."
@@ -79,4 +87,4 @@ def print_graph(graph, options):
         find_mount_point(graph, mount_points, best_keys, (name,), (False,))
 
     for name in sorted(graph.roots):
-        print_subgraph(graph, mount_points, (name,), options)
+        print_subgraph(graph, mount_points, (name,), set(), options)

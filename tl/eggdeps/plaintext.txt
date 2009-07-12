@@ -6,21 +6,28 @@ We populate a custom working set and compute its dependency graph,
 arranging for one subtree to appear more than once in the graph:
 
 >>> anton_1 = make_dist("anton-1.egg", depends="""berta
-...                                               charlie[extra]""")
+...                                               charlie[extra, artxe]""")
 >>> berta_2 = make_dist("berta-2.egg", depends="charlie")
 >>> charlie_1_4 = make_dist("charlie-1.4.egg", depends="""[extra]
-...                                                       dora""")
+...                                                       dora
+...                                                       [artxe]
+...                                                       dora
+...                                                       emil""")
 >>> dora_0_5 = make_dist("dora-0.5.egg")
->>> ws = make_working_set(anton_1, berta_2, charlie_1_4, dora_0_5)
+>>> emil_1 = make_dist("emil-1.egg")
+>>> ws = make_working_set(anton_1, berta_2, charlie_1_4, dora_0_5, emil_1)
 
 >>> from tl.eggdeps.graph import Graph
 >>> graph = Graph(working_set=ws)
 >>> graph.from_working_set()
 >>> sprint(graph)
-{'anton': {'berta': {None: set([])}, 'charlie': {'extra': set([])}},
+{'anton': {'berta': {None: set([])},
+           'charlie': {'artxe': set([]), 'extra': set([])}},
  'berta': {'charlie': {None: set([])}},
- 'charlie': {'dora': {None: set(['extra'])}},
- 'dora': {}}
+ 'charlie': {'dora': {None: set(['artxe', 'extra'])},
+             'emil': {None: set(['artxe'])}},
+ 'dora': {},
+ 'emil': {}}
 
 
 Full trees
@@ -37,6 +44,9 @@ anton
     berta
         charlie ...
     charlie
+      [artxe]
+        dora
+        emil
       [extra]
         dora
 
@@ -47,6 +57,9 @@ anton 1
     berta 2
         charlie 1.4 ...
     charlie 1.4
+      [artxe]
+        dora 0.5
+        emil 1
       [extra]
         dora 0.5
 
@@ -62,6 +75,9 @@ anton
     berta
         charlie
     charlie
+      [artxe]
+        dora
+        emil
       [extra]
         dora
 
@@ -76,8 +92,11 @@ anton
     berta
         ...
     charlie
-      [extra]
+      [artxe]
         dora
+        emil
+      [extra]
+        ...
 
 These two options may be combined to remove even those ellipses:
 
@@ -85,8 +104,10 @@ These two options may be combined to remove even those ellipses:
 anton
     berta
     charlie
-      [extra]
+      [artxe]
         dora
+        emil
+      [extra]
 
 
 Determining which occurrence of a subtree to render

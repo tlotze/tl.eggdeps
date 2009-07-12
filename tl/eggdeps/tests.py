@@ -69,7 +69,8 @@ def test_suite():
                                 Options=Options,
                                 ),
                      optionflags=doctest.NORMALIZE_WHITESPACE |
-                                 doctest.ELLIPSIS |
+                                 (0 if filename == 'plaintext.txt'
+                                  else doctest.ELLIPSIS) |
                                  doctest.REPORT_NDIFF,
                      )
         for filename in sorted(os.listdir(os.path.dirname(__file__)))
