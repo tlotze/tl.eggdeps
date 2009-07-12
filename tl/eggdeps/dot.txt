@@ -2,17 +2,7 @@
 Formatting the graph as a dot input file
 ========================================
 
-First, let's set up some stuff we're going to need:
-
->>> from tl.eggdeps.dot import print_dot
-
->>> def dot_options(**kwargs):
-...     options = dict(version_numbers=False,
-...                    cluster=False)
-...     options.update(kwargs)
-...     return Options(**options)
-
-Now we populate a custom working set and compute its dependency graph,
+We populate a custom working set and compute its dependency graph,
 arranging for one subtree to appear more than once in the graph:
 
 >>> anton_1 = make_dist("anton-1.egg", depends="""berta
@@ -36,7 +26,8 @@ arranging for one subtree to appear more than once in the graph:
 Plain graphs
 ============
 
->>> print_dot(graph, dot_options())
+>>> from tl.eggdeps.dot import print_dot
+>>> print_dot(graph, Options())
 digraph {
 "anton" [style="filled", fillcolor="green", label="anton"]
 "berta" [style="filled", fillcolor="yellow", label="berta"]
@@ -48,7 +39,7 @@ digraph {
 "charlie" -> "dora" [color="lightgrey"]
 }
 
->>> print_dot(graph, dot_options(version_numbers=True))
+>>> print_dot(graph, Options(version_numbers=True))
 digraph {
 "anton" [... label="anton 1"]
 "berta" [... label="berta 2"]
@@ -61,7 +52,7 @@ digraph {
 Clustering root nodes and their direct dependencies
 ===================================================
 
->>> print_dot(graph, dot_options(cluster=True))
+>>> print_dot(graph, Options(cluster=True))
 digraph {
 ...
 subgraph cluster_0 {
@@ -76,7 +67,7 @@ subgraph cluster_0 {
 Including a comment in the dot file
 ===================================
 
->>> options = dot_options()
+>>> options = Options()
 >>> options.comment = u"called by a doc test\nand has two lines"
 >>> print_dot(graph, options)
 // called by a doc test

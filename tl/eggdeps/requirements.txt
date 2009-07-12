@@ -2,16 +2,7 @@
 Building a list of requirements from dependencies
 =================================================
 
-First, let's set up some stuff we're going to need:
-
->>> from tl.eggdeps.requirements import print_list
-
->>> def req_options(**kwargs):
-...     options = dict(version_numbers=False, version_specs=False)
-...     options.update(kwargs)
-...     return Options(**options)
-
-Now we populate a custom working set and compute its dependency graph,
+We populate a custom working set and compute its dependency graph,
 arranging for one distribution to appear more than once in the graph:
 
 >>> anton_1 = make_dist("anton-1.egg", depends="""berta <3
@@ -32,21 +23,22 @@ arranging for one distribution to appear more than once in the graph:
 Unversioned requirements
 ========================
 
->>> print_list(graph, req_options())
+>>> from tl.eggdeps.requirements import print_list
+>>> print_list(graph, Options())
 ['anton', 'berta', 'charlie']
 
 
 Versioned requirements
 ======================
 
->>> print_list(graph, req_options(version_numbers=True))
+>>> print_list(graph, Options(version_numbers=True))
 ['anton==1', 'berta==2', 'charlie==1.4']
 
 
 Requirements with version specifications
 ========================================
 
->>> print_list(graph, req_options(version_specs=True))
+>>> print_list(graph, Options(version_specs=True))
 ['anton>=1', 'berta>=2,<3', 'charlie>=1.4,!=1.7,<2']
 
 
