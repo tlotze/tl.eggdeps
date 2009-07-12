@@ -28,9 +28,8 @@ Full trees
 
 Full trees are still somewhat abbreviated representations of the complete
 dependency structure but include enough information to reconstruct the latter:
-they spell out recurring subtrees only the first time they occur but print the
-subtree root distributions in all other places and add ellipses to hint at
-omissions.
+they spell out recurring subtrees only once but print the subtree root
+distributions in all other places and add ellipses to hint at omissions.
 
 >>> from tl.eggdeps.plaintext import print_graph
 >>> print_graph(graph, Options())
@@ -41,9 +40,7 @@ anton
       [extra]
         dora
 
-Version numbers may be printed next to the distribution names. Since this is
-completely independent of all other options, we may as well demonstrate it
-here:
+Version numbers may be printed next to the distribution names:
 
 >>> print_graph(graph, Options(version_numbers=True))
 anton 1
@@ -54,29 +51,11 @@ anton 1
         dora 0.5
 
 
-Printing each distribution only once
-====================================
+Reduced output
+==============
 
-In order to shorten the representation, repeated occurrences of distributions
-may be suppressed so that each distribution is printed only once. This
-suppresses root distributions of omitted subtrees. Hints at omissions are
-still printed so even though the information printed is no longer enough to
-reconstruct the full tree from the output, one at least knows where something
-is missing.
-
->>> print_graph(graph, Options(once=True))
-anton
-    berta
-        ...
-    charlie
-      [extra]
-        dora
-
-
-Terse output
-============
-
-Terse output omits hints at left-out subtrees, such as ellipses:
+The representation can be shortened in several ways. The ``terse`` option
+omits ellipses for left-out subtrees:
 
 >>> print_graph(graph, Options(terse=True))
 anton
@@ -86,20 +65,28 @@ anton
       [extra]
         dora
 
+Alternatively, the ``once`` option hides omitted subtrees completely so that
+even the names of root distributions of subtrees are printed in only one
+place. This means that the full information cannot be reconstructed from the
+output anymore. Still, an ellipsis indicates where one or more subtrees have
+been left out:
 
-Xmas tree configuration
-=======================
-
-Finally, we switch on all options at once:
-
->>> print_graph(graph, Options(once=True,
-...                               terse=True,
-...                               version_numbers=True))
-anton 1
-    berta 2
-    charlie 1.4
+>>> print_graph(graph, Options(once=True))
+anton
+    berta
+        ...
+    charlie
       [extra]
-        dora 0.5
+        dora
+
+These two options may be combined to remove even those ellipses:
+
+>>> print_graph(graph, Options(once=True, terse=True))
+anton
+    berta
+    charlie
+      [extra]
+        dora
 
 
 Determining which occurrence of a subtree to render
