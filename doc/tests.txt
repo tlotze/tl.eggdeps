@@ -1,6 +1,6 @@
-==========
-Unit tests
-==========
+================
+Documented tests
+================
 
 .. toctree::
     :maxdepth: 3

@@ -74,8 +74,8 @@ This allows for setting defaults using the ``arguments`` option of the egg
 recipe in a buildout configuration, for example.
 
 
-Documentation
-=============
+Details
+=======
 
 The goal of ``eggdeps`` is to compute a directed dependency graph with nodes
 that represent egg distributions from the working set, and edges which

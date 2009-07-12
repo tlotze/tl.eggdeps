@@ -5,7 +5,7 @@ tl.eggdeps documentation contents
     :maxdepth: 3
 
     README
-    doc/unittests
+    doc/tests
     doc/modules
     doc/about
 
