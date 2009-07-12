@@ -6,8 +6,8 @@ We populate a custom working set and compute its dependency graph,
 arranging for one subtree to appear more than once in the graph:
 
 >>> anton_1 = make_dist("anton-1.egg", depends="""berta
-...                                               charlie[extra, artxe]""")
->>> berta_2 = make_dist("berta-2.egg", depends="charlie")
+...                                               charlie[extra]""")
+>>> berta_2 = make_dist("berta-2.egg", depends="charlie[artxe, extra]")
 >>> charlie_1_4 = make_dist("charlie-1.4.egg", depends="""[extra]
 ...                                                       dora
 ...                                                       [artxe]
@@ -22,8 +22,8 @@ arranging for one subtree to appear more than once in the graph:
 >>> graph.from_working_set()
 >>> sprint(graph)
 {'anton': {'berta': {None: set([])},
-           'charlie': {'artxe': set([]), 'extra': set([])}},
- 'berta': {'charlie': {None: set([])}},
+           'charlie': {'extra': set([])}},
+ 'berta': {'charlie': {'artxe': set([]), 'extra': set([])}},
  'charlie': {'dora': {None: set(['artxe', 'extra'])},
              'emil': {None: set(['artxe'])}},
  'dora': {},
@@ -42,8 +42,8 @@ distributions in all other places and add ellipses to hint at omissions.
 >>> print_graph(graph, Options())
 anton
     berta
-        charlie ...
-    charlie
+        charlie [artxe, extra] ...
+    charlie [extra]
       [artxe]
         dora
         emil
@@ -55,8 +55,8 @@ Version numbers may be printed next to the distribution names:
 >>> print_graph(graph, Options(version_numbers=True))
 anton 1
     berta 2
-        charlie 1.4 ...
-    charlie 1.4
+        charlie 1.4 [artxe, extra] ...
+    charlie 1.4 [extra]
       [artxe]
         dora 0.5
         emil 1
@@ -73,8 +73,8 @@ omits ellipses for left-out subtrees:
 >>> print_graph(graph, Options(terse=True))
 anton
     berta
-        charlie
-    charlie
+        charlie [artxe, extra]
+    charlie [extra]
       [artxe]
         dora
         emil
@@ -83,7 +83,8 @@ anton
 
 Alternatively, the ``once`` option hides omitted subtrees completely so that
 even the names of root distributions of subtrees are printed in only one
-place. This means that the full information cannot be reconstructed from the
+place. Which extras of each distribution are required is then not shown
+anymore. This means that the full information cannot be reconstructed from the
 output anymore. Still, an ellipsis indicates where one or more subtrees have
 been left out:
 
@@ -181,7 +182,7 @@ occurrence of that distribution:
 >>> print_graph(graph, Options())
 anton
     berta
-        charlie ...
+        charlie [foo] ...
     charlie
         dora
       [foo]
