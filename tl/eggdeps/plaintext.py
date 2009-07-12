@@ -61,8 +61,7 @@ def find_mount_point(graph, mount_points, best_keys, path, sort_key):
 
     for dep, extras in graph[name].iter_deps():
         find_mount_point(graph, mount_points, best_keys, path + (dep,),
-                         (sort_key[0] + (bool(extras),),
-                          sort_key[1] + (sorted(extras), name)))
+                         sort_key + (bool(extras),))
 
 
 def print_graph(graph, options):
@@ -77,8 +76,7 @@ def print_graph(graph, options):
     mount_points = {}
     best_keys = {}
     for name in graph.roots:
-        find_mount_point(graph, mount_points, best_keys, (name,),
-                         ((False,), ((), name)))
+        find_mount_point(graph, mount_points, best_keys, (name,), (False,))
 
     for name in sorted(graph.roots):
         print_subgraph(graph, mount_points, (name,), options)
