@@ -1,0 +1,71 @@
+===========
+Regressions
+===========
+
+0.3.1
+=====
+
+In version 0.3.1, a bug involving omissions in the plaintext output was found:
+If a subtree was omitted, siblings following its mount point were skipped.
+This is how it should work:
+
+>>> from tl.eggdeps.graph import Graph
+>>> anton = make_dist("anton-1.egg", depends="""berta
+...                                             charlie""")
+>>> berta = make_dist("berta-2.egg", depends="""charlie
+...                                             emil""")
+>>> charlie = make_dist("charlie-1.4.egg", depends="dora")
+>>> dora = make_dist("dora-0.5.egg")
+>>> emil = make_dist("emil-1.egg")
+>>> ws = make_working_set(anton, berta, charlie, dora, emil)
+>>> graph = Graph(working_set=ws)
+>>> graph.from_specifications("anton")
+
+>>> from tl.eggdeps.plaintext import print_graph
+>>> print_graph(graph, Options())
+anton
+    berta
+        charlie ...
+        emil
+    charlie
+        dora
+
+>>> print_graph(graph, Options(once=True))
+anton
+    berta
+        emil
+        ...
+    charlie
+        dora
+
+>>> print_graph(graph, Options(terse=True))
+anton
+    berta
+        charlie
+        emil
+    charlie
+        dora
+
+
+0.3.2
+=====
+
+In version 0.3.2 it was discovered that the graph wouldn't work reliably if
+the name of a distribution occured with different capitalization in different
+places. Since distribution names are supposed to be case-insensitive, the
+following should work as expected:
+
+>>> anton_1 = make_dist("anton-1.egg", depends="berta")
+>>> berta_2 = make_dist("Berta-2.egg")
+>>> ws = make_working_set(anton_1, berta_2)
+>>> graph = Graph(working_set=ws)
+>>> graph.from_working_set()
+>>> sprint(graph)
+{'anton': {'berta': {None: set([])}}, 'berta': {}}
+>>> graph.roots
+set(['anton'])
+
+
+.. Local Variables:
+.. mode: rst
+.. End:
