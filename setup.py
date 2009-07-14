@@ -50,7 +50,7 @@ classifiers = [
     ]
 
 setup(name="tl.eggdeps",
-      version="0.4dev",
+      version="0.5dev",
       description=__doc__.strip(),
       long_description=longdesc,
       keywords="egg eggs dependencies dependency graph tree",

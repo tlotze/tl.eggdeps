@@ -2,7 +2,11 @@
 Change log for tl.eggdeps
 =========================
 
-0.4 (unreleased)
+0.5 (unreleased)
+================
+
+
+0.4 (2009-07-12)
 ================
 
 Features:
