@@ -3,7 +3,7 @@ About tl.eggdeps
 ================
 
 :Author:
-    Thomas Lotze (thomas@thomas-lotze.de, http://thomas-lotze.de/)
+    `Thomas Lotze <http://thomas-lotze.de/>`_ <thomas@thomas-lotze.de>
 
 :Web home:
     http://thomas-lotze.de/en/software/eggdeps/
