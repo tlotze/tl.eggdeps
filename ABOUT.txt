@@ -14,14 +14,11 @@ About tl.eggdeps
 :PyPI page:
     http://pypi.python.org/pypi/tl.eggdeps/
 
-:Subversion home:
-    https://svn.thomas-lotze.de/repos/public/tl.eggdeps/
-
-:Subversion web view:
-    http://svn.thomas-lotze.de/tl.eggdeps/
+:GitHub:
+    https://github.com/tlotze/tl.eggdeps
 
 :Current change log:
-    https://svn.thomas-lotze.de/repos/public/tl.eggdeps/trunk/CHANGES.txt
+    https://github.com/tlotze/tl.eggdeps/blob/master/CHANGES.txt
 
 
 .. Local Variables:

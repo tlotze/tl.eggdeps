@@ -5,6 +5,9 @@ Change log for tl.eggdeps
 0.5 (unreleased)
 ================
 
+Organisation:
+  - Move project to git at <https://github.com/tlotze/tl.eggdeps>.
+
 
 0.4 (2009-07-12)
 ================
