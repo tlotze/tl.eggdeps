@@ -11,10 +11,11 @@ import glob
 from setuptools import setup, find_packages
 
 
-longdesc = "\n\n".join((open("README.txt").read(),
-                        open("ABOUT.txt").read()))
+longdesc = "\n\n".join((open("README.rst").read(),
+                        open("ABOUT.rst").read()))
 
 root_files = glob.glob("*.txt")
+root_files.extend(glob.glob("*.rst"))
 data_files = [("", [name for name in root_files
                     if os.path.split(name)[1] != "index.txt"])]
 
