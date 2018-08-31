@@ -11,12 +11,10 @@ import glob
 from setuptools import setup, find_packages
 
 
-project_path = lambda *names: os.path.join(os.path.dirname(__file__), *names)
+longdesc = "\n\n".join((open("README.txt").read(),
+                        open("ABOUT.txt").read()))
 
-longdesc = "\n\n".join((open(project_path("README.txt")).read(),
-                        open(project_path("ABOUT.txt")).read()))
-
-root_files = glob.glob(project_path("*.txt"))
+root_files = glob.glob("*.txt")
 data_files = [("", [name for name in root_files
                     if os.path.split(name)[1] != "index.txt"])]
 
