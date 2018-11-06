@@ -43,6 +43,7 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
     "License :: OSI Approved :: Zope Public License",
+    "Programming Language :: Python",
     "Programming Language :: Python :: 2 :: Only",
     "Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: Implementation :: CPython",
