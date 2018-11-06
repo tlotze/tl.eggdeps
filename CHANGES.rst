@@ -2,6 +2,12 @@
 Change log for tl.eggdeps
 =========================
 
+0.6 (unreleased)
+================
+
+- Nothing changed yet.
+
+
 0.5.1 (2018-11-06)
 ==================
 
