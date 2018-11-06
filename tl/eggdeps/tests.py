@@ -1,15 +1,10 @@
-# Copyright (c) 2007-2009 Thomas Lotze
-# See also LICENSE.txt
-
-import os.path
-import unittest
 from zope.testing import doctest
 from zope.testing.doctest import DocTestSuite, DocFileSuite
-
+import os.path
 import pkg_resources
 import setuptools.tests.test_resources
-
 import tl.eggdeps.requirements
+import unittest
 
 
 def make_dist(filename, depends=""):

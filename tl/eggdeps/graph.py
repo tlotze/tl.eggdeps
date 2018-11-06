@@ -1,6 +1,3 @@
-# Copyright (c) 2007-2009 Thomas Lotze
-# See also LICENSE.txt
-
 import pkg_resources
 
 

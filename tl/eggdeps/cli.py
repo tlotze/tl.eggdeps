@@ -1,14 +1,10 @@
-# Copyright (c) 2007-2009 Thomas Lotze
-# See also LICENSE.txt
-
 import optparse
 import re
 import sys
-
-import tl.eggdeps.graph
 import tl.eggdeps.dot
-import tl.eggdeps.requirements
+import tl.eggdeps.graph
 import tl.eggdeps.plaintext
+import tl.eggdeps.requirements
 
 
 def eggdeps(**defaults):

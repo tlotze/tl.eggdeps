@@ -1,8 +1,4 @@
 #!/usr/bin/env python
-#
-# Copyright (c) 2007-2009 Thomas Lotze
-# See also LICENSE.txt
-
 """Compute a dependency graph between active Python eggs.
 """
 
@@ -22,7 +18,7 @@ data_files = [("", [name for name in root_files
 
 entry_points = {
     "console_scripts": [
-    "eggdeps = tl.eggdeps.cli:eggdeps",
+        "eggdeps = tl.eggdeps.cli:eggdeps",
     ],
     }
 

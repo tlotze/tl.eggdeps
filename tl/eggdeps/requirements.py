@@ -1,9 +1,5 @@
-# Copyright (c) 2008 Thomas Lotze
-# See also LICENSE.txt
-
-import pprint
-
 import pkg_resources
+import pprint
 
 
 def print_list(graph, options):

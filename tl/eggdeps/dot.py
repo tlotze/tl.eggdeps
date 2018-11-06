@@ -1,7 +1,3 @@
-# Copyright (c) 2007-2009 Thomas Lotze
-# See also LICENSE.txt
-
-
 def print_dot(graph, options):
     """Print a dependency graph to standard output as a dot input file.
 
