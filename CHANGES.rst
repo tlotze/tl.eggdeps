@@ -2,7 +2,7 @@
 Change log for tl.eggdeps
 =========================
 
-0.5 (unreleased)
+0.5 (2018-11-06)
 ================
 
 Organisation:
