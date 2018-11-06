@@ -6,18 +6,11 @@
 """Compute a dependency graph between active Python eggs.
 """
 
-import os.path
-import glob
 from setuptools import setup, find_packages
 
 
 longdesc = "\n\n".join((open("README.rst").read(),
                         open("ABOUT.rst").read()))
-
-root_files = glob.glob("*.txt")
-root_files.extend(glob.glob("*.rst"))
-data_files = [("", [name for name in root_files
-                    if os.path.split(name)[1] != "index.txt"])]
 
 entry_points = {
     "console_scripts": [
@@ -67,7 +60,6 @@ setup(name="tl.eggdeps",
       extras_require=extras_require,
       tests_require=tests_require,
       include_package_data=True,
-      data_files=data_files,
       test_suite="tl.eggdeps.tests.test_suite",
       namespace_packages=["tl"],
       zip_safe=False,
