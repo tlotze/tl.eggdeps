@@ -8,6 +8,11 @@ Change log for tl.eggdeps
 Organisation:
   - Move project to git at <https://github.com/tlotze/tl.eggdeps>.
 
+  - Some clean-up.
+
+  - No longer include package root data files as that doesn't work well with
+    pip installations.
+
 
 0.4 (2009-07-12)
 ================
