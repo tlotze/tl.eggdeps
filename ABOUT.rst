@@ -18,7 +18,7 @@ About tl.eggdeps
     https://github.com/tlotze/tl.eggdeps
 
 :Current change log:
-    https://github.com/tlotze/tl.eggdeps/blob/master/CHANGES.txt
+    https://github.com/tlotze/tl.eggdeps/blob/master/CHANGES.rst
 
 
 .. Local Variables:
