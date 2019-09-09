@@ -51,7 +51,7 @@ def sprint(value):
 
 
 def sort_specs(specs):
-    return sorted(specs, cmp=lambda a, b: cmp(a.project_name, b.project_name))
+    return sorted(specs, key=lambda x: x.project_name)
 
 
 class Options(dict):

@@ -84,7 +84,8 @@ def common_requirement(working_set, distribution):
         inclusions.difference_update(r_exclusions)
         for version in inclusions.copy():
             for lower, upper in r_intervals:
-                if lower < version and (upper is None or version < upper):
+                if ((lower is None or lower < version)
+                        and (upper is None or version < upper)):
                     break
             else:
                 if version not in r_inclusions:
@@ -129,7 +130,7 @@ def common_requirement(working_set, distribution):
     return intersection
 
 
-def interval_intersection((lower1, upper1), (lower2, upper2)):
+def interval_intersection(interval1, interval2):
     """Compute the intersection of two open intervals.
 
     Intervals are pairs of comparable values, one or both may be None to
@@ -153,10 +154,19 @@ def interval_intersection((lower1, upper1), (lower2, upper2)):
 
     >>> interval_intersection((None, 1), (1, None))
     """
-    lower = max(lower1, lower2)
-    if upper1 is None or upper2 is None:
-        upper = max(upper1, upper2)
+    (lower1, upper1) = interval1
+    (lower2, upper2) = interval2
+    if lower1 is None:
+        lower = lower2
+    elif lower2 is None:
+        lower = lower1
+    else:
+        lower = max(lower1, lower2)
+    if upper1 is None:
+        upper = upper2
+    elif upper2 is None:
+        upper = upper1
     else:
         upper = min(upper1, upper2)
-    if lower < upper or upper is None:
+    if lower is None or upper is None or lower < upper:
         return lower, upper

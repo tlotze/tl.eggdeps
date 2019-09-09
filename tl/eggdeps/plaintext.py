@@ -41,6 +41,15 @@ def print_subgraph(graph, mount_points, path, seen, extras, options):
 
     printed_all = True
     seen = set()
+
+    none_deps = deps_by_extra.pop(None)
+    if none_deps:
+        for dep, extras in sorted(none_deps.items()):
+            printed_all = (print_subgraph(graph, mount_points, path + (dep,),
+                                          seen, extras - {None}, options)
+                           and printed_all)
+            seen.add(dep)
+
     for extra, deps in sorted(deps_by_extra.items()):
         # XXX If options.terse, extras whose dependencies will not be printed
         # should not be printed themselves. This requires rewriting most of
