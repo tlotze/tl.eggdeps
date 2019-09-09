@@ -1,17 +1,31 @@
-from zope.testing import doctest
-from zope.testing.doctest import DocTestSuite, DocFileSuite
 from __future__ import print_function
+import doctest
+from doctest import DocTestSuite, DocFileSuite
 import os.path
 import pkg_resources
-import setuptools.tests.test_resources
 import tl.eggdeps.requirements
 import unittest
 import six
 
 
+class Metadata(pkg_resources.EmptyProvider):
+    """Mock object to return metadata as if from an on-disk distribution"""
+
+    def __init__(self, *pairs):
+        self.metadata = dict(pairs)
+
+    def has_metadata(self, name):
+        return name in self.metadata
+
+    def get_metadata(self, name):
+        return self.metadata[name]
+
+    def get_metadata_lines(self, name):
+        return pkg_resources.yield_lines(self.get_metadata(name))
+
+
 def make_dist(filename, depends=""):
-    metadata = setuptools.tests.test_resources.Metadata(("depends.txt",
-                                                         depends))
+    metadata = Metadata(("depends.txt", depends))
     return pkg_resources.Distribution.from_filename(filename,
                                                     metadata=metadata)
 
