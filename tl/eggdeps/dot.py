@@ -1,3 +1,5 @@
+from __future__ import print_function
+import six
 def print_dot(graph, options):
     """Print a dependency graph to standard output as a dot input file.
 
@@ -13,15 +15,15 @@ def print_dot(graph, options):
     """
     if hasattr(options, 'comment'):
         for line in options.comment.splitlines():
-            print '// ' + line
+            print('// ' + line)
 
     direct_deps = set()
     for name in graph.roots:
         direct_deps.update(graph[name])
 
-    print "digraph {"
+    print("digraph {")
 
-    for node in graph.itervalues():
+    for node in six.itervalues(graph):
         node_options = {}
         if options.version_numbers and node.dist:
             node_options["label"] = "%s %s" % (node.name, node.dist.version)
@@ -40,25 +42,25 @@ def print_dot(graph, options):
         if not node.compatible:
             fill("red")
 
-        print '"%s"%s' % (node.name, format_options(node_options))
+        print('"%s"%s' % (node.name, format_options(node_options)))
 
     if options.cluster:
         for i, cluster in enumerate(yield_clusters(graph)):
-            print "subgraph cluster_%s {" % i
-            for name in cluster:
-                print '"%s"' % name
-            print "}"
+            print("subgraph cluster_%s {" % i)
+            for name in sorted(cluster):
+                print('"%s"' % name)
+            print("}")
 
-    for node in graph.itervalues():
+    for node in six.itervalues(graph):
         for dep, extras in node.iter_deps():
             edge_options = {}
             if extras:
                 edge_options["color"] = "lightgrey"
 
-            print '"%s" -> "%s"%s' % (node.name,
-                                      dep, format_options(edge_options))
+            print('"%s" -> "%s"%s' % (node.name,
+                                      dep, format_options(edge_options)))
 
-    print "}"
+    print("}")
 
 
 def format_options(options):
@@ -66,7 +68,7 @@ def format_options(options):
         return ""
 
     return " [%s]" % ", ".join('%s="%s"' % item
-                               for item in options.iteritems())
+                               for item in six.iteritems(options))
 
 
 def yield_clusters(graph):

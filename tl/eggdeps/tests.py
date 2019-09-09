@@ -1,10 +1,12 @@
 from zope.testing import doctest
 from zope.testing.doctest import DocTestSuite, DocFileSuite
+from __future__ import print_function
 import os.path
 import pkg_resources
 import setuptools.tests.test_resources
 import tl.eggdeps.requirements
 import unittest
+import six
 
 
 def make_dist(filename, depends=""):
@@ -31,7 +33,7 @@ def _sprint(value):
 
 
 def sprint(value):
-    print _sprint(value)
+    print(_sprint(value))
 
 
 def sort_specs(specs):

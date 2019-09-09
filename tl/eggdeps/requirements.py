@@ -1,5 +1,6 @@
 import pkg_resources
 import pprint
+import six
 
 
 def print_list(graph, options):
@@ -12,7 +13,7 @@ def print_list(graph, options):
         version_numbers: bool, print version numbers of active distributions?
     """
     reqs = []
-    for name, node in sorted(graph.iteritems()):
+    for name, node in sorted(six.iteritems(graph)):
         if options.version_numbers:
             reqs.append(node.dist.as_requirement())
         elif options.version_specs:
@@ -42,7 +43,7 @@ def common_requirement(working_set, distribution):
     reqs = []
     # XXX take extras into account
     for dist in working_set:
-        reqs.extend(req for req in dist.requires() 
+        reqs.extend(req for req in dist.requires()
                     if req.project_name == name and req.specs)
 
     inclusions = set((distribution.parsed_version,))
@@ -92,9 +93,9 @@ def common_requirement(working_set, distribution):
         # Keep only intersection of interval sets.
         new_intervals = []
         for interval in intervals:
-            new_intervals.extend(filter(None, (
+            new_intervals.extend([_f for _f in (
                 interval_intersection(interval, r_interval)
-                for r_interval in r_intervals)))
+                for r_interval in r_intervals) if _f])
         intervals = new_intervals
 
         # Collect exclusions, keep only those inside one of the remaining

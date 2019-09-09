@@ -149,7 +149,7 @@ On the other hand, if a distribution is not found upon instantiation, it may
 well be found by a later attempt at matching some specification:
 
 >>> node = Node(graph, req_anton_5)
->>> print node.dist
+>>> print(node.dist)
 None
 >>> node.compatible
 False
