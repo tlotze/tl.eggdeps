@@ -34,15 +34,15 @@ classifiers = [
     "Intended Audience :: System Administrators",
     "License :: OSI Approved :: Zope Public License",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 2 :: Only",
-    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Software Development",
     "Topic :: Utilities",
     ]
 
 setup(name="tl.eggdeps",
-      version='0.6.dev0',
+      version='1.0.dev0',
       description=__doc__.strip(),
       long_description=longdesc,
       keywords="egg eggs dependencies dependency graph tree",

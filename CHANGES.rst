@@ -2,10 +2,10 @@
 Change log for tl.eggdeps
 =========================
 
-0.6 (unreleased)
+1.0 (unreleased)
 ================
 
-- Nothing changed yet.
+- Port to Python 3.7 while dropping support for Python 2.
 
 
 0.5.1 (2018-11-06)
