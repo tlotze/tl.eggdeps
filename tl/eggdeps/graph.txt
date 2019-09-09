@@ -37,10 +37,10 @@ Extracting project names from specifications
 Graphs have a method that extracts project names from an iterable of
 distributions or requirements and returns them as a set:
 
->>> graph.names(ws)
-set([...])
+>>> graph.names(ws).__class__
+<class 'set'>
 >>> sprint(graph.names(ws))
-set(['anton', 'berta'])
+{'anton', 'berta'}
 
 A Graph instance has a filter function that determines by project name which
 distributions to include in the graph. This filter applies to the project
@@ -49,7 +49,7 @@ we have to specify something interesting to see an effect:
 
 >>> graph = Graph(ws, show=lambda name: name < "b")
 >>> graph.names(ws)
-set(['anton'])
+{'anton'}
 
 Another method actually named ``filter`` yields pairs of matching
 specifications and associated graph nodes for the distribution to be included
@@ -104,7 +104,7 @@ not active at all, a convenience method handles the exception for us:
 >>> ws.find(req)
 Traceback (most recent call last):
 ...
-VersionConflict: (anton 1 (.../anton-1.egg), Requirement.parse('anton>5'))
+pkg_resources.VersionConflict: (anton 1 (.../anton-1.egg), Requirement.parse('anton>5'))
 
 >>> graph.find(req)
 
@@ -174,11 +174,11 @@ either with or without extras involved:
 
 >>> node.depend('berta')
 >>> list(node.iter_deps())
-[('berta', set([]))]
+[('berta', set())]
 
 >>> node.extra_depend('cool-extra', 'charlie')
 >>> list(node.iter_deps())
-[('charlie', set(['cool-extra'])), ('berta', set([]))]
+[('berta', set()), ('charlie', {'cool-extra'})]
 
 Dependencies can target packages with one or more extras activated. In that
 case, an iterable of extras of the dependency can be specified. We will not
@@ -188,26 +188,25 @@ detailed information:
 
 >>> node.depend('berta', ('hot-extra',))
 >>> node.extra_depend('cool-feature', 'charlie', ('more-coolness',))
->>> list(node.iter_deps())
-[('charlie', set(['cool-feature', 'cool-extra'])),
- ('berta', set([]))]
+>>> sprint(list(node.iter_deps()))
+[('berta', set()), ('charlie', {'cool-extra', 'cool-feature'})]
 >>> list(node.iter_deps_with_extras())
-[('charlie', None, set(['cool-extra'])),
- ('charlie', 'more-coolness', set(['cool-feature'])),
- ('berta', None, set([])),
- ('berta', 'hot-extra', set([]))]
+[('berta', None, set()),
+ ('berta', 'hot-extra', set()),
+ ('charlie', None, {'cool-extra'}),
+ ('charlie', 'more-coolness', {'cool-feature'})]
 
 If the same package is a dependency both via an extra and without one, the
 information on the extra is discarded:
 
 >>> node.depend('charlie')
 >>> list(node.iter_deps())
-[('charlie', set([])), ('berta', set([]))]
+[('berta', set()), ('charlie', set())]
 >>> list(node.iter_deps_with_extras())
-[('charlie', None, set([])),
- ('charlie', 'more-coolness', set(['cool-feature'])),
- ('berta', None, set([])),
- ('berta', 'hot-extra', set([]))]
+[('berta', None, set()),
+ ('berta', 'hot-extra', set()),
+ ('charlie', None, set()),
+ ('charlie', 'more-coolness', {'cool-feature'})]
 
 A node remembers which of its extras have been used over time:
 
@@ -238,15 +237,15 @@ be reported, including mandatory as well as extra dependencies:
 >>> graph = Graph(ws)
 >>> graph.from_working_set()
 >>> sprint(graph)
-{'anton': {'berta': {None: set([])}},
- 'berta': {'dora': {'test': set(['extra'])}},
+{'anton': {'berta': {None: set()}},
+ 'berta': {'dora': {'test': {'extra'}}},
  'dora': {}}
 
 The graph has a set of roots, which are the names of those distributions that
 are not a dependency of any other node:
 
 >>> graph.roots
-set(['anton'])
+{'anton'}
 
 If a distribution depends on another one both mandatorily and by some extras
 (which is possible though not very useful), the dependency is considered a
@@ -261,9 +260,9 @@ plain mandatory dependency:
 >>> graph.from_working_set()
 >>> sprint(graph)
 {'anton': {},
- 'emil': {'anton': {None: set([])}}}
+ 'emil': {'anton': {None: set()}}}
 >>> graph.roots
-set(['emil'])
+{'emil'}
 
 If the graph contains a cycle none of whose constituents is a dependency of a
 distribution outside the cycle, one of those constituents will be considered a
@@ -276,10 +275,10 @@ graph root:
 >>> graph.from_working_set()
 >>> sprint(graph)
 {'anton': {},
- 'emil': {'fritz': {None: set([])}},
- 'fritz': {'emil': {None: set([])}}}
->>> graph.roots
-set(['anton', 'emil'])
+ 'emil': {'fritz': {None: set()}},
+ 'fritz': {'emil': {None: set()}}}
+>>> sprint(graph.roots)
+{'anton', 'emil'}
 
 Dependencies from a working set analysis take versions into account. The
 following does not report a dependency of berta on charlie as berta requires
@@ -304,7 +303,7 @@ Extra dependencies may be ignored completely to simplify a complex graph:
 >>> graph = Graph(ws, extras=False)
 >>> graph.from_working_set()
 >>> sprint(graph)
-{'anton': {'berta': {None: set([])}},
+{'anton': {'berta': {None: set()}},
  'berta': {},
  'dora': {}}
 >>> sorted(graph.roots)
@@ -330,7 +329,7 @@ function that determines which distributions to follow the dependencies of:
 >>> graph = Graph(ws, follow=lambda name: name != "berta")
 >>> graph.from_working_set()
 >>> sprint(graph)
-{'anton': {'berta': {None: set([])}},
+{'anton': {'berta': {None: set()}},
  'berta': {},
  'dora': {}}
 >>> sorted(graph.roots)
@@ -361,13 +360,13 @@ In this  example, anton does not depend on berta and berta's dependencies:
 >>> graph = Graph(ws)
 >>> graph.from_specifications("berta")
 >>> sprint(graph)
-{'berta': {'charlie': {None: set([])}},
+{'berta': {'charlie': {None: set()}},
  'charlie': {}}
 
 The roots of the graph are the specified distributions now:
 
 >>> graph.roots
-set(['berta'])
+{'berta'}
 
 On the other hand, required distributions which are not in the working set are
 included now. In the example, this applies to dora:
@@ -375,12 +374,12 @@ included now. In the example, this applies to dora:
 >>> graph = Graph(ws)
 >>> graph.from_specifications("berta [extra]")
 >>> sprint(graph)
-{'berta': {'charlie': {None: set([])},
-           'dora': {None: set(['extra'])}},
+{'berta': {'charlie': {None: set()},
+           'dora': {None: {'extra'}}},
  'charlie': {},
  'dora': {}}
 >>> graph.roots
-set(['berta'])
+{'berta'}
 
 Node objects store their associated distribution on an attribute. Since dora
 is inactive it doesn't have one, in contrast to berta and charlie:
@@ -398,7 +397,7 @@ charlie is treated as if it wasn't active at all:
 >>> graph = Graph(ws)
 >>> graph.from_specifications("berta")
 >>> sprint(graph)
-{'berta': {'charlie': {None: set([])}},
+{'berta': {'charlie': {None: set()}},
  'charlie': {}}
 
 >>> graph["charlie"].dist
@@ -415,10 +414,10 @@ nodes only by way of extras. In our example, this applies to anton:
 >>> graph = Graph(ws, extras=False)
 >>> graph.from_specifications("berta [extra]")
 >>> sprint(graph)
-{'berta': {'charlie': {None: set([])}},
+{'berta': {'charlie': {None: set()}},
  'charlie': {}}
 >>> graph.roots
-set(['berta'])
+{'berta'}
 
 Ignoring specific distributions has different effects than in whole working
 set analysis as well. Whichever other distributions are connected to the roots
@@ -430,7 +429,7 @@ berta in this case), will be left out of the graph themselves:
 >>> sprint(graph)
 {'anton': {}}
 >>> graph.roots
-set(['anton'])
+{'anton'}
 
 Similarly, distributions depended on by dead ends only (charlie again) will be
 missing from the graph:
@@ -438,10 +437,10 @@ missing from the graph:
 >>> graph = Graph(ws, follow=lambda name: name != "berta")
 >>> graph.from_specifications("anton")
 >>> sprint(graph)
-{'anton': {'berta': {None: set([])}},
+{'anton': {'berta': {None: set()}},
  'berta': {}}
 >>> graph.roots
-set(['anton'])
+{'anton'}
 >>> graph["anton"].follow
 True
 >>> graph["berta"].follow
@@ -461,15 +460,15 @@ missing:
 >>> graph.from_specifications("fritz")
 >>> sprint(graph)
 {'charlie': {},
- 'fritz': {'charlie': {None: set([])}}}
+ 'fritz': {'charlie': {None: set()}}}
 
 >>> graph = Graph(ws, follow=lambda name: name != "berta")
 >>> graph.from_specifications("fritz")
 >>> sprint(graph)
 {'berta': {},
  'charlie': {},
- 'fritz': {'berta': {None: set([])},
-           'charlie': {None: set([])}}}
+ 'fritz': {'berta': {None: set()},
+           'charlie': {None: set()}}}
 >>> graph["berta"].follow
 False
 >>> graph["charlie"].follow

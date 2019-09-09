@@ -39,10 +39,17 @@ def make_working_set(*dists):
 
 def _sprint(value):
     if isinstance(value, set):
-        return "set([%s])" % ", ".join(repr(elem) for elem in sorted(value))
+        if len(value):
+            return "{{{}}}".format(", ".join(repr(elem) for elem in sorted(value)))
+        else:
+            return "set()"
     if isinstance(value, dict):
         return "{%s}" % ", ".join("%r: %s" % (key, _sprint(value))
-                                  for key, value in sorted(value.iteritems()))
+                                  for key, value in sorted(six.iteritems(value)))
+    if isinstance(value, list):
+        return "[{}]".format(", ".join(_sprint(v) for v in value))
+    if isinstance(value, tuple):
+        return "({})".format(", ".join(_sprint(v) for v in value))
     return repr(value)
 
 

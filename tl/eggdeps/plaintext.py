@@ -71,7 +71,7 @@ def print_subgraph(graph, mount_points, path, seen, extras, options):
 
 def find_mount_point(graph, mount_points, best_keys, path, sort_key):
     name = path[-1]
-    if name in mount_points and best_keys[name] <= sort_key:
+    if name in mount_points and best_keys[name] != sort_key:
         return
 
     mount_points[name] = path

@@ -17,9 +17,9 @@ arranging for one subtree to appear more than once in the graph:
 >>> graph = Graph(working_set=ws)
 >>> graph.from_working_set()
 >>> sprint(graph)
-{'anton': {'berta': {None: set([])}, 'charlie': {'extra': set([])}},
- 'berta': {'charlie': {None: set([])}},
- 'charlie': {'dora': {None: set(['extra'])}},
+{'anton': {'berta': {None: set()}, 'charlie': {'extra': set()}},
+ 'berta': {'charlie': {None: set()}},
+ 'charlie': {'dora': {None: {'extra'}}},
  'dora': {}}
 
 
@@ -29,22 +29,22 @@ Plain graphs
 >>> from tl.eggdeps.dot import print_dot
 >>> print_dot(graph, Options())
 digraph {
-"anton" [style="filled", fillcolor="green", label="anton"]
-"berta" [style="filled", fillcolor="yellow", label="berta"]
+"anton" [label="anton", style="filled", fillcolor="green"]
+"berta" [label="berta", style="filled", fillcolor="yellow"]
+"charlie" [label="charlie", style="filled", fillcolor="yellow"]
 "dora" [label="dora"]
-"charlie" [style="filled", fillcolor="yellow", label="charlie"]
-"anton" -> "charlie"
 "anton" -> "berta"
+"anton" -> "charlie"
 "berta" -> "charlie"
 "charlie" -> "dora" [color="lightgrey"]
 }
 
 >>> print_dot(graph, Options(version_numbers=True))
 digraph {
-"anton" [... label="anton 1"]
-"berta" [... label="berta 2"]
+"anton" [label="anton 1"...]
+"berta" [label="berta 2"...]
+"charlie" [label="charlie 1.4"...]
 "dora" [label="dora 0.5"]
-"charlie" [... label="charlie 1.4"]
 ...
 }
 
@@ -56,9 +56,9 @@ Clustering root nodes and their direct dependencies
 digraph {
 ...
 subgraph cluster_0 {
-"charlie"
-"berta"
 "anton"
+"berta"
+"charlie"
 }
 ...
 }

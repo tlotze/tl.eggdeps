@@ -21,11 +21,11 @@ arranging for one subtree to appear more than once in the graph:
 >>> graph = Graph(working_set=ws)
 >>> graph.from_working_set()
 >>> sprint(graph)
-{'anton': {'berta': {None: set([])},
-           'charlie': {'extra': set([])}},
- 'berta': {'charlie': {'artxe': set([]), 'extra': set([])}},
- 'charlie': {'dora': {None: set(['artxe', 'extra'])},
-             'emil': {None: set(['artxe'])}},
+{'anton': {'berta': {None: set()},
+           'charlie': {'extra': set()}},
+ 'berta': {'charlie': {'artxe': set(), 'extra': set()}},
+ 'charlie': {'dora': {None: {'artxe', 'extra'}},
+             'emil': {None: {'artxe'}}},
  'dora': {},
  'emil': {}}
 
@@ -42,26 +42,26 @@ distributions in all other places and add ellipses to hint at omissions.
 >>> print_graph(graph, Options())
 anton
     berta
-        charlie [artxe, extra] ...
-    charlie [extra]
-      [artxe]
-        dora
-        emil
-      [extra]
-        dora
+        charlie [artxe, extra]
+          [artxe]
+            dora
+            emil
+          [extra]
+            dora
+    charlie [extra] ...
 
 Version numbers may be printed next to the distribution names:
 
 >>> print_graph(graph, Options(version_numbers=True))
 anton 1
     berta 2
-        charlie 1.4 [artxe, extra] ...
-    charlie 1.4 [extra]
-      [artxe]
-        dora 0.5
-        emil 1
-      [extra]
-        dora 0.5
+        charlie 1.4 [artxe, extra]
+          [artxe]
+            dora 0.5
+            emil 1
+          [extra]
+            dora 0.5
+    charlie 1.4 [extra] ...
 
 
 Reduced output
@@ -74,12 +74,12 @@ omits ellipses for left-out subtrees:
 anton
     berta
         charlie [artxe, extra]
+          [artxe]
+            dora
+            emil
+          [extra]
+            dora
     charlie [extra]
-      [artxe]
-        dora
-        emil
-      [extra]
-        dora
 
 Alternatively, the ``once`` option hides omitted subtrees completely so that
 even the names of root distributions of subtrees are printed in only one
@@ -91,13 +91,13 @@ been left out:
 >>> print_graph(graph, Options(once=True))
 anton
     berta
-        ...
-    charlie
-      [artxe]
-        dora
-        emil
-      [extra]
-        ...
+        charlie
+          [artxe]
+            dora
+            emil
+          [extra]
+            ...
+    ...
 
 These two options may be combined to remove even those ellipses:
 
@@ -132,9 +132,9 @@ printing a deep tree:
 >>> print_graph(graph, Options())
 anton
     berta
+        charlie
+            dora
         charlie ...
-    charlie
-        dora
 
 In particular, this prevents infinite recursion with cyclic dependency graphs:
 
@@ -182,11 +182,11 @@ occurrence of that distribution:
 >>> print_graph(graph, Options())
 anton
     berta
-        charlie [foo] ...
-    charlie
-        dora
-      [foo]
-        emil
+        charlie [foo]
+            dora
+          [foo]
+            emil
+    charlie ...
 
 
 .. Local Variables:

@@ -25,26 +25,26 @@ This is how it should work:
 >>> print_graph(graph, Options())
 anton
     berta
-        charlie ...
+        charlie
+            dora
         emil
-    charlie
-        dora
+    charlie ...
 
 >>> print_graph(graph, Options(once=True))
 anton
     berta
+        charlie
+            dora
         emil
         ...
-    charlie
-        dora
 
 >>> print_graph(graph, Options(terse=True))
 anton
     berta
         charlie
+            dora
         emil
     charlie
-        dora
 
 
 0.3.2
@@ -61,9 +61,9 @@ following should work as expected:
 >>> graph = Graph(working_set=ws)
 >>> graph.from_working_set()
 >>> sprint(graph)
-{'anton': {'berta': {None: set([])}}, 'berta': {}}
+{'anton': {'berta': {None: set()}}, 'berta': {}}
 >>> graph.roots
-set(['anton'])
+{'anton'}
 
 
 .. Local Variables:
