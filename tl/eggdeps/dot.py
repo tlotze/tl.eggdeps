@@ -1,5 +1,6 @@
 from __future__ import print_function
-import six
+
+
 def print_dot(graph, options):
     """Print a dependency graph to standard output as a dot input file.
 
@@ -23,7 +24,7 @@ def print_dot(graph, options):
 
     print("digraph {")
 
-    for node in six.itervalues(graph):
+    for node in graph.values():
         node_options = {}
         if options.version_numbers and node.dist:
             node_options["label"] = "%s %s" % (node.name, node.dist.version)
@@ -51,7 +52,7 @@ def print_dot(graph, options):
                 print('"%s"' % name)
             print("}")
 
-    for node in six.itervalues(graph):
+    for node in graph.values():
         for dep, extras in node.iter_deps():
             edge_options = {}
             if extras:
@@ -67,8 +68,7 @@ def format_options(options):
     if not options:
         return ""
 
-    return " [%s]" % ", ".join('%s="%s"' % item
-                               for item in six.iteritems(options))
+    return " [%s]" % ", ".join('%s="%s"' % item for item in options.items())
 
 
 def yield_clusters(graph):

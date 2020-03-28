@@ -1,6 +1,5 @@
 import pkg_resources
 import pprint
-import six
 
 
 def print_list(graph, options):
@@ -13,7 +12,7 @@ def print_list(graph, options):
         version_numbers: bool, print version numbers of active distributions?
     """
     reqs = []
-    for name, node in sorted(six.iteritems(graph)):
+    for name, node in sorted(graph.items()):
         if options.version_numbers:
             reqs.append(node.dist.as_requirement())
         elif options.version_specs:

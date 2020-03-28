@@ -5,7 +5,6 @@ import os.path
 import pkg_resources
 import tl.eggdeps.requirements
 import unittest
-import six
 
 
 class Metadata(pkg_resources.EmptyProvider):
@@ -45,7 +44,7 @@ def _sprint(value):
             return "set()"
     if isinstance(value, dict):
         return "{%s}" % ", ".join("%r: %s" % (key, _sprint(value))
-                                  for key, value in sorted(six.iteritems(value)))
+                                  for key, value in sorted(value.items()))
     if isinstance(value, list):
         return "[{}]".format(", ".join(_sprint(v) for v in value))
     if isinstance(value, tuple):

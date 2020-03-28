@@ -5,7 +5,6 @@ import tl.eggdeps.dot
 import tl.eggdeps.graph
 import tl.eggdeps.plaintext
 import tl.eggdeps.requirements
-import six
 
 
 def eggdeps(**defaults):
@@ -82,7 +81,7 @@ def eggdeps(**defaults):
     options.comment = 'arguments: ' + ' '.join(sys.argv[1:])
     if defaults:
         options.comment += '\ndefaults:\n' + '\n'.join(
-            '%s=%r' % item for item in sorted(six.iteritems(defaults)))
+            '%s=%r' % item for item in sorted(defaults.items()))
 
     formatter = {
         "plaintext": tl.eggdeps.plaintext.print_graph,
