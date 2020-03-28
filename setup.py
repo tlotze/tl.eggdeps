@@ -16,7 +16,6 @@ entry_points = {
 
 install_requires = [
     "setuptools",
-    "six",
     ]
 
 tests_require = [
