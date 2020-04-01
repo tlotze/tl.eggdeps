@@ -3,6 +3,7 @@
 *.pyo
 /.Python
 /.installed.cfg
+/.tox/
 /bin/
 /build/
 /develop-eggs/
@@ -10,7 +11,7 @@
 /eggs/
 /include/
 /lib/
-/local/
 /local.cfg
+/local/
 /parts/
 /pip-selfcheck.json

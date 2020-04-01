@@ -1,0 +1,9 @@
+include *.rst
+include *.txt
+include base.cfg
+
+exclude MANIFEST.in
+
+recursive-include doc *.py
+recursive-include doc *.txt
+recursive-include src *.txt
