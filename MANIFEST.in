@@ -1,6 +1,7 @@
 include *.rst
 include *.txt
 include base.cfg
+include tox.ini
 
 exclude MANIFEST.in
 
