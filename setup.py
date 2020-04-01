@@ -12,19 +12,19 @@ entry_points = {
     "console_scripts": [
         "eggdeps = tl.eggdeps.cli:eggdeps",
     ],
-    }
+}
 
 install_requires = [
     "setuptools",
-    ]
+]
 
 tests_require = [
     "zope.testing",
-    ]
+]
 
 extras_require = {
     "test": tests_require,
-    }
+}
 
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -35,10 +35,11 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Software Development",
     "Topic :: Utilities",
-    ]
+]
 
 setup(name="tl.eggdeps",
       version='1.0.dev0',
@@ -53,6 +54,7 @@ setup(name="tl.eggdeps",
       packages=find_packages('src'),
       package_dir={'': 'src'},
       entry_points=entry_points,
+      python_requires='>=3.7, <4',
       install_requires=install_requires,
       extras_require=extras_require,
       tests_require=tests_require,
